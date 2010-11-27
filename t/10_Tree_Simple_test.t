@@ -196,31 +196,31 @@ is($tree, $sub_tree_2_parent, '... make sure our sub_tree_2 parent is tree');
 
 # we create our new sub_tree and attach it
 # to our root through its constructor
-#my $sub_tree_4 = Tree::Simple.new("4.0", $tree); 	
+my $sub_tree_4 = Tree::Simple.new("4.0", $tree); 	
 
 # check its node value
-#is($sub_tree_4.getNodeValue(), "4.0", '... this tree is 4.0');
+is($sub_tree_4.getNodeValue(), "4.0", '... this tree is 4.0');
 
 # since we have assigned a parent to
 # the new sub_tree, it will no longer be 
 # considered a root
-# ok(!$sub_tree_4->isRoot());
+ok(!$sub_tree_4.isRoot());
 
-# # check the depth of the sub_tree
-# cmp_ok($sub_tree_4->getDepth(), '==', 0, '... depth should be 0 now');
+# check the depth of the sub_tree
+is($sub_tree_4.getDepth(), 0, '... depth should be 0 now');
 
-# # check the index
-# cmp_ok($sub_tree_4->getIndex(), '==', 2, '... index should be 2 now');
+# check the index
+is($sub_tree_4.getIndex(), 2, '... index should be 2 now');
 
-# # but since it has no children
-# # it is also a leaf node
-# ok($sub_tree_4->isLeaf());
+# but since it has no children
+# it is also a leaf node
+ok($sub_tree_4.isLeaf());
 
-# # make sure that we now have 3 children in our root	
-# cmp_ok($tree->getChildCount(), '==', 3, '... we should have 3 children now');
+# make sure that we now have 3 children in our root	
+#is($tree.getChildCount(), 3, '... we should have 3 children now');
 
-# # and verify that the child at index 2
-# # is actually our latest sub_tree	
+# and verify that the child at index 2
+# is actually our latest sub_tree	
 # is($tree->getChild(2), $sub_tree_4, '... make sure our sub_tree is fetchable');	
 
 # # and make sure that the new sub-trees

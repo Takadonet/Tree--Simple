@@ -25,17 +25,6 @@ class Tree::Simple {
 # ## Tree::Simple
 # ## ----------------------------------------------------------------------------
 
-# my $USE_WEAK_REFS;
-
-# sub import {
-#     shift;
-#     return unless @_;
-#     if (lc($_[0]) eq 'use_weak_refs') {
-#         $USE_WEAK_REFS++;
-#         *Tree::Simple::weaken = \&Scalar::Util::weaken;
-#     }
-# }
-
 
 # ### constructor
 #todo need to find hash reference so we can set it to uid
@@ -46,6 +35,10 @@ multi method new($node) {
 
 multi method new($node,'root'){
     self.bless(*, node => $node,parent =>'root');
+}
+
+multi method new($node,$parent){
+    self.bless(*, node => $node,parent =>$parent,depth => $parent.getDepth() + 1);
 }
     
 
