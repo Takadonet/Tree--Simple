@@ -149,61 +149,61 @@ is($tree, $sub_tree_parent, '... make sure our sub_tree parent is tree');
 my $sub_tree_2 = Tree::Simple.new("2.0");
 ok($sub_tree_2 ~~ Tree::Simple, 'Tree::Simple object');
 
-# # check its node value
-# is($sub_tree_2->getNodeValue(), "2.0", '... this tree is 2.0');
+# check its node value
+is($sub_tree_2.getNodeValue(), "2.0", '... this tree is 2.0');
 
-# # since we have not assigned a parent to 
-# # the new sub_tree it will still be
-# # considered a root
-# ok($sub_tree_2->isRoot());
+# since we have not assigned a parent to 
+# the new sub_tree it will still be
+# considered a root
+ok($sub_tree_2.isRoot());
 
-# # and since it has no children
-# # it is also a leaf node
-# ok($sub_tree_2->isLeaf());
+# and since it has no children
+# it is also a leaf node
+ok($sub_tree_2.isLeaf());
 
-# # add our new subtree as a sibling
-# # of our first sub_tree
-# $sub_tree->addSibling($sub_tree_2);
+# add our new subtree as a sibling
+# of our first sub_tree
+$sub_tree.addSibling($sub_tree_2);
 
-# # now that we have assigned a parent to
-# # the new sub_tree, it will no longer be 
-# # considered a root
-# ok(!$sub_tree_2->isRoot());
+# now that we have assigned a parent to
+# the new sub_tree, it will no longer be 
+# considered a root
+ok(!$sub_tree_2.isRoot());
 
-# # check the depth of the sub_tree
-# cmp_ok($sub_tree_2->getDepth(), '==', 0, '... depth should be 0 now');
+# check the depth of the sub_tree
+is($sub_tree_2.getDepth(), 0, '... depth should be 0 now');
 
-# # check the index
-# cmp_ok($sub_tree_2->getIndex(), '==', 1, '... index should be 1');
+# check the index
+is($sub_tree_2.getIndex(), 1, '... index should be 1');
 
-# # make sure that we now have 2 children in our root	
-# cmp_ok($tree->getChildCount(), '==', 2, '... we should have 2 children now');	
+# make sure that we now have 2 children in our root	
+is($tree.getChildCount(), 2, '... we should have 2 children now');	
 
-# # and verify that the child at index 1
-# # is actually our second sub_tree	
-# is($tree->getChild(1), $sub_tree_2, '... make sure our sub_tree is fetchable');	
+# and verify that the child at index 1
+# is actually our second sub_tree	
+is($tree.getChild(1), $sub_tree_2, '... make sure our sub_tree is fetchable');	
 	
-# # get the parent of our second sub_tree
-# my $sub_tree_2_parent = $sub_tree_2->getParent();
+# get the parent of our second sub_tree
+my $sub_tree_2_parent = $sub_tree_2.getParent();
 
-# # and make sure that it is the 
-# # same as our root
-# is($tree, $sub_tree_2_parent, '... make sure our sub_tree_2 parent is tree');
+# and make sure that it is the 
+# same as our root
+is($tree, $sub_tree_2_parent, '... make sure our sub_tree_2 parent is tree');
 	
-# ## ----------------------------------------------------------------------------
-# ## test adding child by giving parent as a constructor argument
-# ## ----------------------------------------------------------------------------	
+## ----------------------------------------------------------------------------
+## test adding child by giving parent as a constructor argument
+## ----------------------------------------------------------------------------	
 
-# # we create our new sub_tree and attach it
-# # to our root through its constructor
-# my $sub_tree_4 = Tree::Simple->new("4.0", $tree); 	
+# we create our new sub_tree and attach it
+# to our root through its constructor
+#my $sub_tree_4 = Tree::Simple.new("4.0", $tree); 	
 
-# # check its node value
-# is($sub_tree_4->getNodeValue(), "4.0", '... this tree is 4.0');
+# check its node value
+#is($sub_tree_4.getNodeValue(), "4.0", '... this tree is 4.0');
 
-# # since we have assigned a parent to
-# # the new sub_tree, it will no longer be 
-# # considered a root
+# since we have assigned a parent to
+# the new sub_tree, it will no longer be 
+# considered a root
 # ok(!$sub_tree_4->isRoot());
 
 # # check the depth of the sub_tree

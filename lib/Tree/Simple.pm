@@ -123,14 +123,14 @@ multi method setWidth(Tree::Simple $child_width) {
 
      self.width += $child_width.getWidth();
      # and now bubble up to the parent (unless we are the root)
-     self.getParent().setWidth($child_width) unless .self.isRoot();            
+     self.getParent().setWidth($child_width) unless self.isRoot();            
 }
     
     
 multi method setWidth(Int $child_width) {
      self.width += $child_width;
      # and now bubble up to the parent (unless we are the root)
-     self.getParent().setWidth($child_width) unless .self.isRoot();            
+     self.getParent().setWidth($child_width) unless self.isRoot();            
 }
 
 # ## ----------------------------------------------------------------------------
@@ -159,6 +159,7 @@ method addChild(Tree::Simple $child) {
     self.insertChildAt($index,$child);
 }
 
+    
 method addChildren {
 #     splice @_, 1, 0, $_[0]->getChildCount;
 #     goto &insertChildren;
@@ -290,11 +291,11 @@ method getIndex {
 # # eliminates the need to overload these method
 # # in things like the Keyable Tree object
 
-method addSibling {
+method addSibling(Tree::Simple $child) {
 #     my ($self, @args) = @_;
 #     (!$self->isRoot()) 
 #         || die "Insufficient Arguments : cannot add a sibling to a ROOT tree";
-#     $self->{_parent}->addChild(@args);
+    self.parent.addChild($child);
 }
 
 method addSiblings {
@@ -326,7 +327,7 @@ method getUID       { $_[0]{_uid}    }
 method getParent    { $.parent; }
 method getDepth     { $.depth;  }
 method getNodeValue { $.node;   }
-method getWidth     { $_[0]{_width}  }
+method getWidth     { $.width;  }
 method getHeight    { $.height; }
 
 # # for backwards compatability
@@ -343,11 +344,7 @@ method getChild(Int $index) {
 }
 
 method getAllChildren {
-#     my ($self) = @_;
-#     return wantarray ?
-#         @{$self->{_children}}
-#         :
-#         $self->{_children};
+    self.children;
 }
 
 method getSibling {
