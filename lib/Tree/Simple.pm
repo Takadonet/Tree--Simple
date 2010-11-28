@@ -98,7 +98,7 @@ method setParent($parent) {
 #         || die "Insufficient Arguments : parent also must be a Tree::Simple object";
      $.parent = $parent;    
      if ($parent eq $.ROOT) {
-         $._depth = -1;
+         $.depth = -1;
      }
      else {
          $.depth = $parent.getDepth() + 1;
@@ -169,17 +169,16 @@ method addChild(Tree::Simple $child) {
 #     splice @_, 1, 0, $_[0]->getChildCount;
     my $index = self.getChildCount();
     self.insertChildAt($index,$child);
+    return self;
 }
 
-
-    
-    
-method addChildren(@children) {
+method addChildren(*@children) {
     my $index;
     for @children -> $child {
         $index = self.getChildCount();
         self.insertChildAt($index,$child);        
     }
+    return self;
 }
 
     
@@ -226,69 +225,68 @@ method insertChildAt(Int $index where { $index >= 0 },*@trees where { @trees.ele
 # # inserting an array of one tree
 #*insertChild = \&insertChildren;
 
-method removeChildAt {
-    say 'nyi';
-#     my ($self, $index) = @_;
-#     (defined($index)) 
-#         || die "Insufficient Arguments : Cannot remove child without index.";
-#     ($self->getChildCount() != 0) 
-#         || die "Illegal Operation : There are no children to remove";        
-#     # check the bounds of our children 
-#     # against the index given        
-#     ($index < $self->getChildCount()) 
-#         || die "Index Out of Bounds : got ($index) expected no more than (" . $self->getChildCount() . ")";        
-#     my $removed_child;
-#     # if index is zero, use this optimization    
-#     if ($index == 0) {
-#         $removed_child = shift @{$self->{_children}};
-#     }
-#     # if index is equal to the number of children
-#     # then use this optimization    
-#     elsif ($index == $#{$self->{_children}}) {
-#         $removed_child = pop @{$self->{_children}};    
-#     }
-#     # otherwise do some heavy lifting here    
-#     else {
-#         $removed_child = $self->{_children}->[$index];
-#         splice @{$self->{_children}}, $index, 1;
-#     }
-#     # make sure we fix the height
-#     $self->fixHeight();
-#     $self->fixWidth();    
-#     # make sure that the removed child
-#     # is no longer connected to the parent
-#     # so we change its parent to ROOT
-#     $removed_child->_setParent($self->ROOT);
-#     # and now we make sure that the depth 
-#     # of the removed child is aligned correctly
-#     $removed_child->fixDepth() unless $removed_child->isLeaf();    
-#     # return ths removed child
-#     # it is the responsibility 
-#     # of the user of this module
-#     # to properly dispose of this
-#     # child (and all its sub-children)
-#     return $removed_child;
+method removeChildAt($index) {
+
+    (self.getChildCount() != 0) 
+         || die "Illegal Operation : There are no children to remove";        
+    # check the bounds of our children 
+     # against the index given        
+     ($index < self.getChildCount()) 
+         || die "Index Out of Bounds : got ($index) expected no more than (" ~ self.getChildCount() ~ ")";        
+
+    my $removed_child;
+    # if index is zero, use this optimization    
+    if $index == 0 {
+        $removed_child = shift self.children;
+    }
+    # if index is equal to the number of children
+    # then use this optimization    
+    elsif $index == self.children.end {
+        $removed_child = pop self.children;    
+    }
+    # otherwise do some heavy lifting here    
+    else {
+        $removed_child = self.children[$index];
+        splice self.children, $index, 1;
+    }
+    # make sure we fix the height
+    self.fixHeight();
+    self.fixWidth();    
+    # make sure that the removed child
+    # is no longer connected to the parent
+    # so we change its parent to ROOT
+    $removed_child.setParent($.ROOT);
+    # and now we make sure that the depth 
+    # of the removed child is aligned correctly
+    $removed_child.fixDepth() unless $removed_child.isLeaf();    
+    # return ths removed child
+    # it is the responsibility 
+    # of the user of this module
+    # to properly dispose of this
+    # child (and all its sub-children)
+    return $removed_child;
 }
 
-method removeChild {
-    say 'nyi';    
-#     my ($self, $child_to_remove) = @_;
-#     (defined($child_to_remove))
-#         || die "Insufficient Arguments : you must specify a child to remove";
-#     # maintain backwards compatability
-#     # so any non-ref arguments will get 
-#     # sent to removeChildAt
-#     return $self->removeChildAt($child_to_remove) unless ref($child_to_remove);
-#     # now that we are confident it's a reference
-#     # make sure it is the right kind
-#     (blessed($child_to_remove) && $child_to_remove->isa("Tree::Simple")) 
-#         || die "Insufficient Arguments : Only valid child type is a Tree::Simple object";
-#     my $index = 0;
-#     foreach my $child ($self->getAllChildren()) {
-#         ("$child" eq "$child_to_remove") && return $self->removeChildAt($index);
-#         $index++;
-#     }
-#     die "Child Not Found : cannot find object ($child_to_remove) in self";
+    # maintain backwards compatability
+    # so any non-ref arguments will get 
+    # sent to removeChildAt
+    #todo nyi what is ref in p6 idoms?    
+multi method removeChild(Int $child_index) {
+    return self.removeChildAt($child_index);
+}
+    
+    
+multi method removeChild($child_to_remove) {
+
+ #   (blessed($child_to_remove) && $child_to_remove->isa("Tree::Simple")) 
+ #       || die "Insufficient Arguments : Only valid child type is a Tree::Simple object";
+    my $index = 0;
+    for self.getAllChildren() -> $child {
+        #todo need to double check it works as advertised
+        ("$child" eq "$child_to_remove") && return self.removeChildAt($index);
+        $index++;
+    }
+    die "Child Not Found : cannot find object ($child_to_remove) in self";
 }
 
 method getIndex {
@@ -312,25 +310,30 @@ method getIndex {
 # # in things like the Keyable Tree object
 
 method addSibling(Tree::Simple $child) {
-#     my ($self, @args) = @_;
-#     (!$self->isRoot()) 
-#         || die "Insufficient Arguments : cannot add a sibling to a ROOT tree";
+     (!self.isRoot()) 
+         || die "Insufficient Arguments : cannot add a sibling to a ROOT tree";
     self.parent.addChild($child);
 }
 
-method addSiblings {
-#     my ($self, @args) = @_;
-#     (!$self->isRoot()) 
-#         || die "Insufficient Arguments : cannot add siblings to a ROOT tree";
-#     $self->{_parent}->addChildren(@args);
+method addSiblings(@siblings) {
+     (!self.isRoot()) 
+         || die "Insufficient Arguments : cannot add siblings to a ROOT tree";
+     self.parent.addChildren(@siblings);
 }
 
-method insertSiblings {
-    say 'nyi';    
-#     my ($self, @args) = @_;
-#     (!$self->isRoot()) 
-#         || die "Insufficient Arguments : cannot insert sibling(s) to a ROOT tree";
-#     $self->{_parent}->insertChildren(@args);
+method insertSibling($index,$sibling) {
+    (!self.isRoot()) 
+         || die "Insufficient Arguments : cannot insert sibling(s) to a ROOT tree";
+    #todo need to create alias for insertChildren to insertChildAt
+    self.parent.insertChildAt($index,$sibling);
+}
+    
+    
+method insertSiblings($index,@args) {
+    (!self.isRoot()) 
+         || die "Insufficient Arguments : cannot insert sibling(s) to a ROOT tree";
+    #todo need to create alias for insertChildren to insertChildAt
+    self.parent.insertChildAt($index,@args);    
 }
 
 # # insertSibling is really the same as
@@ -368,12 +371,10 @@ method getAllChildren {
     self.children;
 }
 
-method getSibling {
-        say 'nyi';
-#     my ($self, $index) = @_;
-#     (!$self->isRoot()) 
-#         || die "Insufficient Arguments : cannot get siblings from a ROOT tree";    
-#     $self->getParent()->getChild($index);
+method getSibling($index) {
+     (!self.isRoot()) 
+         || die "Insufficient Arguments : cannot get siblings from a ROOT tree";    
+     self.getParent().getChild($index);
 }
 
 method getAllSiblings {
@@ -382,8 +383,8 @@ method getAllSiblings {
     self.getParent().getAllChildren();
 }
 
-# ## ----------------------------------------------------------------------------
-# ## informational
+## ----------------------------------------------------------------------------
+## informational
 
 method isLeaf {
     self.getChildCount() == 0;
@@ -393,18 +394,16 @@ method isRoot {
     return (!defined($.parent) || $.parent eq $.ROOT);
 }
 
-method size {
-        say 'nyi';
-#     my ($self) = @_;
-#     my $size = 1;
-#     foreach my $child ($self->getAllChildren()) {
-#         $size += $child->size();    
-#     }
-#     return $size;
+method size() {
+    my $size = 1;
+    for self.getAllChildren() -> $child {
+        $size += $child.size();    
+    }
+    return $size;
 }
 
-# ## ----------------------------------------------------------------------------
-# ## misc
+## ----------------------------------------------------------------------------
+## misc
 
 # # NOTE:
 # # Occasionally one wants to have the 
@@ -428,7 +427,6 @@ method size {
 method fixDepth {
     # make sure the tree's depth 
     # is up to date all the way down
-    say 'nyi 414';
     self.traverse(sub ($tree) {
             return if $tree.isRoot();
             $tree.depth = $tree.getParent().getDepth() + 1;
@@ -441,49 +439,47 @@ method fixDepth {
 # # discrepencies which might arise when 
 # # you remove a sub-tree
 method fixHeight {
-    say 'nyi';
-#     my ($self) = @_;
-#     # we must find the tallest sub-tree
-#     # and use that to define the height
-#     my $max_height = 0;
-#     unless ($self->isLeaf()) {
-#         foreach my $child ($self->getAllChildren()) {
-#             my $child_height = $child->getHeight();
-#             $max_height = $child_height if ($max_height < $child_height);
-#         }
-#     }
-#     # if there is no change, then we 
-#     # need not bubble up through the
-#     # parents
-#     return if ($self->{_height} == ($max_height + 1));
-#     # otherwise ...
-#     $self->{_height} = $max_height + 1;
-#     # now we need to bubble up through the parents 
-#     # in order to rectify any issues with height
-#     $self->getParent()->fixHeight() unless $self->isRoot();
+    # we must find the tallest sub-tree
+    # and use that to define the height
+    my $max_height = 0;
+    unless self.isLeaf() {
+        for self.getAllChildren() -> $child {
+            my $child_height = $child.getHeight();
+            $max_height = $child_height if $max_height < $child_height;
+        }
+    }
+    # if there is no change, then we 
+    # need not bubble up through the
+    # parents
+    return if self.height == ($max_height + 1);
+    # otherwise ...
+    self.height = $max_height + 1;
+    # now we need to bubble up through the parents 
+    # in order to rectify any issues with height
+    self.getParent().fixHeight() unless self.isRoot();
 }
 
 method fixWidth {
-    say 'nyi';    
-#     my ($self) = @_;
-#     my $fixed_width = 0;
-#     $fixed_width += $_->getWidth() foreach $self->getAllChildren();
-#     $self->{_width} = $fixed_width;
-#     $self->getParent()->fixWidth() unless $self->isRoot();
+    my $fixed_width = 0;
+    for self.getAllChildren() {
+        $fixed_width += $_.getWidth();
+    }
+    
+    self.width = $fixed_width;
+    self.getParent().fixWidth() unless self.isRoot();
 }
 
-method traverse {
-    say 'nyi';    
+method traverse($func,$post?) {
 #     my ($self, $func, $post) = @_;
 #     (defined($func)) || die "Insufficient Arguments : Cannot traverse without traversal function";
 #     (ref($func) eq "CODE") || die "Incorrect Object Type : traversal function is not a function";
 #     (ref($post) eq "CODE") || die "Incorrect Object Type : post traversal function is not a function"
 #         if defined($post);
-#     foreach my $child ($self->getAllChildren()) { 
-#         $func->($child);
-#         $child->traverse($func, $post);
-#         defined($post) && $post->($child);
-#     }
+    for self.getAllChildren() -> $child { 
+        $func.($child);
+        $child.traverse($func, $post);
+        $post && $post.($child);
+    }
 }
 
 # # this is an improved version of the 
@@ -505,31 +501,29 @@ method accept {
 # ## ----------------------------------------------------------------------------
 # ## cloning 
 
-method clone {
-    say 'nyi';    
-#     my ($self) = @_;
-#     # first clone the value in the node
-#     my $cloned_node = _cloneNode($self->getNodeValue());
-#     # create a new Tree::Simple object 
-#     # here with the cloned node, however
-#     # we do not assign the parent node
-#     # since it really does not make a lot
-#     # of sense. To properly clone it would
-#     # be to clone back up the tree as well,
-#     # which IMO is not intuitive. So in essence
-#     # when you clone a tree, you detach it from
-#     # any parentage it might have
-#     my $clone = $self->new($cloned_node);
-#     # however, because it is a recursive thing
-#     # when you clone all the children, and then
-#     # add them to the clone, you end up setting
-#     # the parent of the children to be that of
-#     # the clone (which is correct)
-#     $clone->addChildren(
-#                 map { $_->clone() } $self->getAllChildren()
-#                 ) unless $self->isLeaf();
-#     # return the clone            
-#     return $clone;
+method clone() {
+    # first clone the value in the node
+#    my $cloned_node = cloneNode(self.getNodeValue());
+    # create a new Tree::Simple object 
+    # here with the cloned node, however
+    # we do not assign the parent node
+    # since it really does not make a lot
+    # of sense. To properly clone it would
+    # be to clone back up the tree as well,
+    # which IMO is not intuitive. So in essence
+    # when you clone a tree, you detach it from
+    # any parentage it might have
+#    my $clone = self.new($cloned_node);
+    # however, because it is a recursive thing
+    # when you clone all the children, and then
+    # add them to the clone, you end up setting
+    # the parent of the children to be that of
+    # the clone (which is correct)
+#    $clone.addChildren(
+#                map { $_->clone() } $self->getAllChildren()
+#                ) unless self.isLeaf();
+    # return the clone            
+#    return $clone;
 }
     
 # # this allows cloning of single nodes while 

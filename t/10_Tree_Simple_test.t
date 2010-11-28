@@ -399,645 +399,651 @@ for @more_sub_children -> $sub_child {
 }
 
 # check to see if we can insert children
-#$sub_tree.insertChildren(1, @more_sub_children);
+#TODO need to make alias for 'insertChildren' that direct to insertChildAt    
+$sub_tree.insertChildAt(1, @more_sub_children);
 
-# # make sure that we now have 6 children now	
-# cmp_ok($sub_tree.getChildCount(), '==', 6, '... we should have 6 children now');
+# make sure that we now have 6 children now	
+is($sub_tree.getChildCount(), 6, '... we should have 6 children now');
 
-# # now check that sub_tree's children 
-# # are the same as our list
-# ok eq_array([ $sub_tree.getAllChildren() ], [ $sub_children[0], @more_sub_children, @sub_children[1 .. $#sub_children] ]);
+# now check that sub_tree's children 
+# are the same as our list
+is_deeply([ $sub_tree.getAllChildren() ], [ @sub_children[0], @more_sub_children, @sub_children[1 .. @sub_children.end()] ]);
 
-# # now go through the children again
-# # and test them
-# foreach my $sub_child (@more_sub_children) {
-# 	# they should no longer think
-# 	# they are roots
-# 	ok(!$sub_child.isRoot());
+# now go through the children again
+# and test them
+for @more_sub_children -> $sub_child {
+ 	# they should no longer think
+ 	# they are roots
+ 	ok(!$sub_child.isRoot());
 	
-# 	# but they should still think they 
-# 	# are leaves
-# 	ok($sub_child.isLeaf());
+ 	# but they should still think they 
+ 	# are leaves
+ 	ok($sub_child.isLeaf());
 	
-# 	# now we test their parental relationship
-# 	is($sub_tree, $sub_child.getParent(), '... their parent is the sub_tree');
+ 	# now we test their parental relationship
+ 	is($sub_tree, $sub_child.getParent(), '... their parent is the sub_tree');
 	
-# 	# and they should all have a depth of 1
-# 	cmp_ok($sub_child.getDepth(), '==', 1, '... depth should be 1');
+ 	# and they should all have a depth of 1
+ 	is($sub_child.getDepth(), 1, '... depth should be 1');
 	
-# 	# now check that its siblings are the same 
-# 	# as the children of its parent
-# 	ok eq_array([ $sub_tree.getAllChildren() ], [ $sub_child.getAllSiblings() ]);
-# }
+ 	# now check that its siblings are the same 
+ 	# as the children of its parent
+ 	is_deeply([ $sub_tree.getAllChildren() ], [ $sub_child.getAllSiblings() ]);
+}
 
-# ## ----------------------------------------------------------------------------
-# ## test addingSiblings
-# ## ----------------------------------------------------------------------------	
+## ----------------------------------------------------------------------------
+## test addingSiblings
+## ----------------------------------------------------------------------------	
 
-# my @more_children = (
-#  			Tree::Simple.new("5.0"),
-# 			Tree::Simple.new("9.0")
-# 			);
+ my @more_children = (
+  			Tree::Simple.new("5.0"),
+ 			Tree::Simple.new("9.0")
+ 			);
 
-# # now go through the children and test them
-# foreach my $sub_child (@more_children) {
-# 	# they should think they are root
-# 	ok($sub_child.isRoot());
+# now go through the children and test them
+for @more_children -> $sub_child {
+ 	# they should think they are root
+ 	ok($sub_child.isRoot());
 
-# 	# and they should all be leaves
-# 	ok($sub_child.isLeaf());
+ 	# and they should all be leaves
+ 	ok($sub_child.isLeaf());
 
-# 	# and their node values
+ 	# and their node values
+        #todo nyi in Test.pm
+ 	#like($sub_child.getNodeValue(), qr/[0-9]\.0/, '... they at least have digit followed by ".0"');
+	
+ 	# and they should all have a depth of -1
+ 	is($sub_child.getDepth(), -1, '... depth should be -1');	
+}
+
+# check to see if we can insert children
+$sub_tree.addSiblings(@more_children);
+
+# make sure that we now have 6 children now	
+is($tree.getChildCount(), 6, '... we should have 6 children now');
+
+# now check that tree's new children 
+# are the same as our list
+is($tree.getChild(4), @more_children[0], '... they are the same');
+is($tree.getChild(5), @more_children[1], '... they are the same');
+
+# now go through the children again
+# and test them
+for @more_children -> $sub_child {
+ 	# they should no longer think
+ 	# they are roots
+ 	ok(!$sub_child.isRoot());
+	
+ 	# but they should still think they 
+ 	# are leaves
+ 	ok($sub_child.isLeaf());
+	
+ 	# now we test their parental relationship
+ 	is($tree, $sub_child.getParent(), '... their parent is the tree');
+	
+ 	# and they should all have a depth of 1
+ 	is($sub_child.getDepth(), 0, '... depth should be 0');
+	
+ 	# now check that its siblings are the same 
+ 	# as the children of its parent			
+ 	is_deeply([ $tree.getAllChildren() ], [ $sub_child.getAllSiblings() ]);
+}
+
+## ----------------------------------------------------------------------------
+## test insertSibling
+## ----------------------------------------------------------------------------	
+
+my $new_sibling = Tree::Simple.new("8.0"); 
+
+# they should think they are root
+ok($new_sibling.isRoot());
+
+# and they should all be leaves
+ok($new_sibling.isLeaf());
+
+# and their node values
+is($new_sibling.getNodeValue(), "8.0", '... node value should be 6.0');
+
+# and they should all have a depth of -1
+is($new_sibling.getDepth(), -1, '... depth should be -1');	
+
+# check to see if we can insert children
+$sub_tree.insertSibling(5, $new_sibling);
+
+# make sure that we now have 6 children now	
+is($tree.getChildCount(), 7, '... we should have 7 children now');
+
+# now check that sub_tree's new sibling
+# is in the right place and that it 
+# should have displaced the old value at
+# that index to index + 1 
+is($tree.getChild(4), @more_children[0], '... they are the same');
+is($tree.getChild(5), $new_sibling, '... they are the same');
+is($tree.getChild(6), @more_children[1], '... they are the same');
+
+# they should no longer think
+# they are roots
+ok(!$new_sibling.isRoot());
+
+# but they should still think they 
+# are leaves
+ok($new_sibling.isLeaf());
+
+# now we test their parental relationship
+is($tree, $new_sibling.getParent(), '... their parent is the tree');
+
+# and they should all have a depth of 1
+is($new_sibling.getDepth(), 0, '... depth should be 0');
+	
+# now check that its siblings are the same 
+# as the children of its parent			
+is_deeply([ $tree.getAllChildren() ], [ $new_sibling.getAllSiblings() ]);
+
+## ----------------------------------------------------------------------------
+## test inserting Siblings
+## ----------------------------------------------------------------------------	
+
+my @even_more_children = (
+  			Tree::Simple.new("6.0"),
+ 			Tree::Simple.new("7.0")
+ 			);
+
+# now go through the children and test them
+for @even_more_children -> $sub_child {
+ 	# they should think they are root
+ 	ok($sub_child.isRoot());
+
+ 	# and they should all be leaves
+ 	ok($sub_child.isLeaf());
+
+ 	# and their node values
+        #todo nyi in Test.pm
 # 	like($sub_child.getNodeValue(), qr/[0-9]\.0/, '... they at least have digit followed by ".0"');
 	
-# 	# and they should all have a depth of -1
-# 	cmp_ok($sub_child.getDepth(), '==', -1, '... depth should be -1');	
-# }
+ 	# and they should all have a depth of -1
+ 	is($sub_child.getDepth(), -1, '... depth should be -1');	
+}
 
-# # check to see if we can insert children
-# $sub_tree.addSiblings(@more_children);
+# check to see if we can insert children
+$sub_tree.insertSiblings(5, @even_more_children);
 
-# # make sure that we now have 6 children now	
-# cmp_ok($tree.getChildCount(), '==', 6, '... we should have 6 children now');
+# make sure that we now have 6 children now	
+is($tree.getChildCount(), 9, '... we should have 6 children now');
 
-# # now check that tree's new children 
-# # are the same as our list
-# is($tree.getChild(4), $more_children[0], '... they are the same');
-# is($tree.getChild(5), $more_children[1], '... they are the same');
+# now check that tree's new children 
+# are the same as our list
+is($tree.getChild(4), @more_children[0], '... they are the same');
+is($tree.getChild(5), @even_more_children[0], '... they are the same');
+is($tree.getChild(6), @even_more_children[1], '... they are the same');
+is($tree.getChild(7), $new_sibling, '... they are the same');
+is($tree.getChild(8), @more_children[1], '... they are the same');
 
-# # now go through the children again
-# # and test them
-# foreach my $sub_child (@more_children) {
-# 	# they should no longer think
-# 	# they are roots
-# 	ok(!$sub_child.isRoot());
+# now go through the children again
+# and test them
+for @even_more_children ->  $sub_child {
+ 	# they should no longer think
+ 	# they are roots
+ 	ok(!$sub_child.isRoot());
 	
-# 	# but they should still think they 
-# 	# are leaves
-# 	ok($sub_child.isLeaf());
+ 	# but they should still think they 
+ 	# are leaves
+ 	ok($sub_child.isLeaf());
 	
-# 	# now we test their parental relationship
-# 	is($tree, $sub_child.getParent(), '... their parent is the tree');
+ 	# now we test their parental relationship
+ 	is($tree, $sub_child.getParent(), '... their parent is the tree');
 	
-# 	# and they should all have a depth of 1
-# 	cmp_ok($sub_child.getDepth(), '==', 0, '... depth should be 0');
+ 	# and they should all have a depth of 1
+ 	is($sub_child.getDepth(), 0, '... depth should be 0');
 	
-# 	# now check that its siblings are the same 
-# 	# as the children of its parent			
-# 	ok eq_array([ $tree.getAllChildren() ], [ $sub_child.getAllSiblings() ]);
-# }
+ 	# now check that its siblings are the same 
+ 	# as the children of its parent			
+ 	is_deeply([ $tree.getAllChildren() ], [ $sub_child.getAllSiblings() ]);
+}
 
-# ## ----------------------------------------------------------------------------
-# ## test insertSibling
-# ## ----------------------------------------------------------------------------	
+## ----------------------------------------------------------------------------
+## test getChild and getSibling
+## ----------------------------------------------------------------------------	
 
-# my $new_sibling = Tree::Simple.new("8.0"); 
+# make sure that getChild returns the
+# same as getSibling
+for 0 .. $tree.getChildCount()  {
+    is($tree.getChild($_), $sub_tree.getSibling($_), '... siblings are the same as children');
+}        
 
-# # they should think they are root
-# ok($new_sibling.isRoot());
 
-# # and they should all be leaves
-# ok($new_sibling.isLeaf());
+## ----------------------------------------------------------------------------
+## test self referential returns
+## ----------------------------------------------------------------------------	
 
-# # and their node values
-# is($new_sibling.getNodeValue(), "8.0", '... node value should be 6.0');
+# addChildren's return value is actually $self
+# so that method calls can be chained
+my $self_ref_tree_test = Tree::Simple.new("3.1", $sub_tree_3).addChildren(
+ 									Tree::Simple.new("3.1.1"),
+ 									Tree::Simple.new("3.1.2")
+ 								);
+# make sure that it true
+ok($self_ref_tree_test ~~ Tree::Simple,'Should be a Tree::Simple');
 
-# # and they should all have a depth of -1
-# cmp_ok($new_sibling.getDepth(), '==', -1, '... depth should be -1');	
+# it shouldnt be a root
+ok(!$self_ref_tree_test.isRoot());
 
-# # check to see if we can insert children
-# $sub_tree.insertSibling(5, $new_sibling);
+# and it shouldnt be a leaf
+ok(!$self_ref_tree_test.isLeaf());
 
-# # make sure that we now have 6 children now	
-# cmp_ok($tree.getChildCount(), '==', 7, '... we should have 7 children now');
+# make sure that the parent in the constructor worked
+is($sub_tree_3, $self_ref_tree_test.getParent(), '... should be the same');
 
-# # now check that sub_tree's new sibling
-# # is in the right place and that it 
-# # should have displaced the old value at
-# # that index to index + 1 
-# is($tree.getChild(4), $more_children[0], '... they are the same');
-# is($tree.getChild(5), $new_sibling, '... they are the same');
-# is($tree.getChild(6), $more_children[1], '... they are the same');
+# and the parents count should be 1
+is($sub_tree_3.getChildCount(), 1, '... we should have 1 child here');
 
-# # they should no longer think
-# # they are roots
-# ok(!$new_sibling.isRoot());
+# make sure they show up in the count test
+is($self_ref_tree_test.getChildCount(), 2, '... we should have 2 children here');
 
-# # but they should still think they 
-# # are leaves
-# ok($new_sibling.isLeaf());
-
-# # now we test their parental relationship
-# is($tree, $new_sibling.getParent(), '... their parent is the tree');
-
-# # and they should all have a depth of 1
-# cmp_ok($new_sibling.getDepth(), '==', 0, '... depth should be 0');
+for $self_ref_tree_test.getAllChildren() -> $sub_child {
+ 	# they should not think
+ 	# they are roots
+ 	ok(!$sub_child.isRoot());
 	
-# # now check that its siblings are the same 
-# # as the children of its parent			
-# ok eq_array([ $tree.getAllChildren() ], [ $new_sibling.getAllSiblings() ]);
-
-# ## ----------------------------------------------------------------------------
-# ## test inserting Siblings
-# ## ----------------------------------------------------------------------------	
-
-# my @even_more_children = (
-#  			Tree::Simple.new("6.0"),
-# 			Tree::Simple.new("7.0")
-# 			);
-
-# # now go through the children and test them
-# foreach my $sub_child (@even_more_children) {
-# 	# they should think they are root
-# 	ok($sub_child.isRoot());
-
-# 	# and they should all be leaves
-# 	ok($sub_child.isLeaf());
-
-# 	# and their node values
-# 	like($sub_child.getNodeValue(), qr/[0-9]\.0/, '... they at least have digit followed by ".0"');
+ 	# but they should think they 
+ 	# are leaves
+ 	ok($sub_child.isLeaf());
 	
-# 	# and they should all have a depth of -1
-# 	cmp_ok($sub_child.getDepth(), '==', -1, '... depth should be -1');	
-# }
-
-# # check to see if we can insert children
-# $sub_tree.insertSiblings(5, @even_more_children);
-
-# # make sure that we now have 6 children now	
-# cmp_ok($tree.getChildCount(), '==', 9, '... we should have 6 children now');
-
-# # now check that tree's new children 
-# # are the same as our list
-# is($tree.getChild(4), $more_children[0], '... they are the same');
-# is($tree.getChild(5), $even_more_children[0], '... they are the same');
-# is($tree.getChild(6), $even_more_children[1], '... they are the same');
-# is($tree.getChild(7), $new_sibling, '... they are the same');
-# is($tree.getChild(8), $more_children[1], '... they are the same');
-
-# # now go through the children again
-# # and test them
-# foreach my $sub_child (@even_more_children) {
-# 	# they should no longer think
-# 	# they are roots
-# 	ok(!$sub_child.isRoot());
+ 	# now we test their parental relationship
+ 	is($self_ref_tree_test, $sub_child.getParent(), '... their parent is the tree');
 	
-# 	# but they should still think they 
-# 	# are leaves
-# 	ok($sub_child.isLeaf());
+ 	# and they should all have a depth of 1
+ 	is($sub_child.getDepth(), 2, '... depth should be 0');
 	
-# 	# now we test their parental relationship
-# 	is($tree, $sub_child.getParent(), '... their parent is the tree');
-	
-# 	# and they should all have a depth of 1
-# 	cmp_ok($sub_child.getDepth(), '==', 0, '... depth should be 0');
-	
-# 	# now check that its siblings are the same 
-# 	# as the children of its parent			
-# 	ok eq_array([ $tree.getAllChildren() ], [ $sub_child.getAllSiblings() ]);
-# }
-
-# ## ----------------------------------------------------------------------------
-# ## test getChild and getSibling
-# ## ----------------------------------------------------------------------------	
-
-# # make sure that getChild returns the
-# # same as getSibling
-# is($tree.getChild($_), $sub_tree.getSibling($_), '... siblings are the same as children') 
-# 	foreach (0 .. $tree.getChildCount());
-
-# ## ----------------------------------------------------------------------------
-# ## test self referential returns
-# ## ----------------------------------------------------------------------------	
-
-# # addChildren's return value is actually $self
-# # so that method calls can be chained
-# my $self_ref_tree_test = Tree::Simple.new("3.1", $sub_tree_3)
-# 								.addChildren(
-# 									Tree::Simple.new("3.1.1"),
-# 									Tree::Simple.new("3.1.2")
-# 								);
-# # make sure that it true
-# isa_ok($self_ref_tree_test, 'Tree::Simple');
-
-# # it shouldnt be a root
-# ok(!$self_ref_tree_test.isRoot());
-
-# # and it shouldnt be a leaf
-# ok(!$self_ref_tree_test.isLeaf());
-
-# # make sure that the parent in the constructor worked
-# is($sub_tree_3, $self_ref_tree_test.getParent(), '... should be the same');
-
-# # and the parents count should be 1
-# cmp_ok($sub_tree_3.getChildCount(), '==', 1, '... we should have 1 child here');
-
-# # make sure they show up in the count test
-# cmp_ok($self_ref_tree_test.getChildCount(), '==', 2, '... we should have 2 children here');
-
-# foreach my $sub_child ($self_ref_tree_test.getAllChildren()) {
-# 	# they should not think
-# 	# they are roots
-# 	ok(!$sub_child.isRoot());
-	
-# 	# but they should think they 
-# 	# are leaves
-# 	ok($sub_child.isLeaf());
-	
-# 	# now we test their parental relationship
-# 	is($self_ref_tree_test, $sub_child.getParent(), '... their parent is the tree');
-	
-# 	# and they should all have a depth of 1
-# 	cmp_ok($sub_child.getDepth(), '==', 2, '... depth should be 0');
-	
-# 	# now check that its siblings are the same 
-# 	# as the children of its parent			
-# 	ok eq_array([ $self_ref_tree_test.getAllChildren() ], [ $sub_child.getAllSiblings() ]);
-# }
-
-# ## ----------------------------------------------------------------------------	
-# ## Test self-referential version of addChild
-# ## ----------------------------------------------------------------------------
-
-# # addChild's return value is actually $self
-# # so that method calls can be chained
-# my $self_ref_tree_test_2 = Tree::Simple.new("2.1", $sub_tree_2)
-# 								.addChild(
-# 									Tree::Simple.new("2.1.1")
-# 								);
-# # make sure that it true
-# isa_ok($self_ref_tree_test_2, 'Tree::Simple');
-
-# # it shouldnt be a root
-# ok(!$self_ref_tree_test_2.isRoot());
-
-# # and it shouldnt be a leaf
-# ok(!$self_ref_tree_test_2.isLeaf());
-
-# # make sure that the parent in the constructor worked
-# is($sub_tree_2, $self_ref_tree_test_2.getParent(), '... should be the same');
-
-# # and the parents count should be 1
-# cmp_ok($sub_tree_2.getChildCount(), '==', 1, '... we should have 1 child here');
-
-# # make sure they show up in the count test
-# cmp_ok($self_ref_tree_test_2.getChildCount(), '==', 1, '... we should have 1 child here');
-
-# my $sub_child = $self_ref_tree_test_2.getChild(0);
-
-# # they should not think
-# # they are roots
-# ok(!$sub_child.isRoot());
+ 	# now check that its siblings are the same 
+ 	# as the children of its parent			
+ 	is_deeply([ $self_ref_tree_test.getAllChildren() ], [ $sub_child.getAllSiblings() ]);
+}
 
-# # but they should think they 
-# # are leaves
-# ok($sub_child.isLeaf());
+## ----------------------------------------------------------------------------	
+## Test self-referential version of addChild
+## ----------------------------------------------------------------------------
 
-# # now we test their parental relationship
-# is($self_ref_tree_test_2, $sub_child.getParent(), '... their parent is the tree');
+# addChild's return value is actually $self
+# so that method calls can be chained
+my $self_ref_tree_test_2 = Tree::Simple.new("2.1", $sub_tree_2).addChild(
+ 									Tree::Simple.new("2.1.1")
+ 								);
+# make sure that it true
+ok($self_ref_tree_test_2 ~~ Tree::Simple);
 
-# # and they should all have a depth of 1
-# cmp_ok($sub_child.getDepth(), '==', 2, '... depth should be 0');
+# it shouldnt be a root
+ok(!$self_ref_tree_test_2.isRoot());
 
-# # now check that its siblings are the same 
-# # as the children of its parent		
-# ok eq_array([ $self_ref_tree_test_2.getAllChildren() ], [ $sub_child.getAllSiblings() ]);
+# and it shouldnt be a leaf
+ok(!$self_ref_tree_test_2.isLeaf());
 
-# ## ----------------------------------------------------------------------------
-# ## test removeChildAt
-# ## ----------------------------------------------------------------------------	
+# make sure that the parent in the constructor worked
+is($sub_tree_2, $self_ref_tree_test_2.getParent(), '... should be the same');
 
-# my $sub_tree_of_tree_to_remove = Tree::Simple.new("1.1.a.1");
-# # make a node to remove
-# my $tree_to_remove = Tree::Simple.new("1.1.a").addChild($sub_tree_of_tree_to_remove);
+# and the parents count should be 1
+is($sub_tree_2.getChildCount(), 1, '... we should have 1 child here');
 
-# # test that its a root
-# ok($tree_to_remove.isRoot());
+# make sure they show up in the count test
+is($self_ref_tree_test_2.getChildCount(), 1, '... we should have 1 child here');
 
-# # and that its depth is -1
-# cmp_ok($tree_to_remove.getDepth(), '==', -1, '... the depth should be -1'); 
-# # and the sub-trees depth is 0
-# cmp_ok($sub_tree_of_tree_to_remove.getDepth(), '==', 0, '... the depth should be 0'); 
+my $sub_child = $self_ref_tree_test_2.getChild(0);
 
-# # insert it into the sub_tree
-# $sub_tree.insertChild(1, $tree_to_remove);
+# they should not think
+# they are roots
+ok(!$sub_child.isRoot());
 
-# # test that it no longer thinks its a root
-# ok(!$tree_to_remove.isRoot());
+# but they should think they 
+# are leaves
+ok($sub_child.isLeaf());
 
-# # check thats its depth is now 1
-# cmp_ok($tree_to_remove.getDepth(), '==', 1, '... the depth should be 1'); 
-# # and the sub-trees depth is 2
-# cmp_ok($sub_tree_of_tree_to_remove.getDepth(), '==', 2, '... the depth should be 2'); 
+# now we test their parental relationship
+is($self_ref_tree_test_2, $sub_child.getParent(), '... their parent is the tree');
 
-# # make sure it is there
-# is($sub_tree.getChild(1), $tree_to_remove, '... these tree should be equal');		
+# and they should all have a depth of 1
+is($sub_child.getDepth(), 2, '... depth should be 0');
 
-# # remove the subtree (it will be returned)
-# my $removed_tree = $sub_tree.removeChildAt(1);
+# now check that its siblings are the same 
+# as the children of its parent		
+is_deeply([ $self_ref_tree_test_2.getAllChildren() ], [ $sub_child.getAllSiblings() ]);
 
-# # now check that the one removed it the one 
-# # we inserted origianlly
-# is($removed_tree, $tree_to_remove, '... these tree should be equal');
+## ----------------------------------------------------------------------------
+## test removeChildAt
+## ----------------------------------------------------------------------------	
 
-# # it should think its a root again
-# ok($tree_to_remove.isRoot());
-# # and its depth should be back to -1
-# cmp_ok($tree_to_remove.getDepth(), '==', -1, '... the depth should be -1'); 
-# # and the sub-trees depth is 0
-# cmp_ok($sub_tree_of_tree_to_remove.getDepth(), '==', 0, '... the depth should be 0'); 	
+my $sub_tree_of_tree_to_remove = Tree::Simple.new("1.1.a.1");
+# make a node to remove
+my $tree_to_remove = Tree::Simple.new("1.1.a").addChild($sub_tree_of_tree_to_remove);
 
-# ## ----------------------------------------------------------------------------
-# ## test removeChild
-# ## ----------------------------------------------------------------------------	
+# test that its a root
+ok($tree_to_remove.isRoot());
 
-# my $sub_tree_of_tree_to_remove2 = Tree::Simple.new("1.1.a.1");
-# # make a node to remove
-# my $tree_to_remove2 = Tree::Simple.new("1.1.a").addChild($sub_tree_of_tree_to_remove2);
+# and that its depth is -1
+is($tree_to_remove.getDepth(), -1, '... the depth should be -1'); 
+# and the sub-trees depth is 0
+is($sub_tree_of_tree_to_remove.getDepth(), 0, '... the depth should be 0'); 
 
-# # test that its a root
-# ok($tree_to_remove2.isRoot());
+# insert it into the sub_tree
+#TODO need to make alias for 'insertChildren' that direct to insertChildAt    
+$sub_tree.insertChildAt(1, $tree_to_remove);
 
-# # and that its depth is -1
-# cmp_ok($tree_to_remove2.getDepth(), '==', -1, '... the depth should be -1'); 
-# # and the sub-trees depth is 0
-# cmp_ok($sub_tree_of_tree_to_remove2.getDepth(), '==', 0, '... the depth should be 0'); 
+# test that it no longer thinks its a root
+ok(!$tree_to_remove.isRoot());
 
-# # insert it into the sub_tree
-# $sub_tree.insertChild(1, $tree_to_remove2);
+# check thats its depth is now 1
+is($tree_to_remove.getDepth(), 1, '... the depth should be 1'); 
+# and the sub-trees depth is 2
+is($sub_tree_of_tree_to_remove.getDepth(), 2, '... the depth should be 2'); 
 
-# # test that it no longer thinks its a root
-# ok(!$tree_to_remove2.isRoot());
+# make sure it is there
+is($sub_tree.getChild(1), $tree_to_remove, '... these tree should be equal');		
 
-# # check thats its depth is now 1
-# cmp_ok($tree_to_remove2.getDepth(), '==', 1, '... the depth should be 1'); 
-# # and the sub-trees depth is 2
-# cmp_ok($sub_tree_of_tree_to_remove2.getDepth(), '==', 2, '... the depth should be 2'); 
+# remove the subtree (it will be returned)
+my $removed_tree = $sub_tree.removeChildAt(1);
 
-# # make sure it is there
-# is($sub_tree.getChild(1), $tree_to_remove2, '... these tree should be equal');		
+# now check that the one removed it the one 
+# we inserted origianlly
+is($removed_tree, $tree_to_remove, '... these tree should be equal');
 
-# # remove the subtree (it will be returned)
-# my $removed_tree2 = $sub_tree.removeChild($tree_to_remove2);
+# it should think its a root again
+ok($tree_to_remove.isRoot());
+# and its depth should be back to -1
+is($tree_to_remove.getDepth(), -1, '... the depth should be -1'); 
+# and the sub-trees depth is 0
+is($sub_tree_of_tree_to_remove.getDepth(), 0, '... the depth should be 0'); 	
 
-# # now check that the one removed it the one 
-# # we inserted origianlly
-# is($removed_tree2, $tree_to_remove2, '... these tree should be equal');
+## ----------------------------------------------------------------------------
+## test removeChild
+## ----------------------------------------------------------------------------	
 
-# # it should think its a root again
-# ok($tree_to_remove2.isRoot());
-# # and its depth should be back to -1
-# cmp_ok($tree_to_remove2.getDepth(), '==', -1, '... the depth should be -1'); 
-# # and the sub-trees depth is 0
-# cmp_ok($sub_tree_of_tree_to_remove2.getDepth(), '==', 0, '... the depth should be 0'); 	
+my $sub_tree_of_tree_to_remove2 = Tree::Simple.new("1.1.a.1");
+# make a node to remove
+my $tree_to_remove2 = Tree::Simple.new("1.1.a").addChild($sub_tree_of_tree_to_remove2);
 
-# ## ----------------------------------------------------------------------------
-# ## test removeChild backwards compatability
-# ## ----------------------------------------------------------------------------	
+# test that its a root
+ok($tree_to_remove2.isRoot());
 
-# # make a node to remove
-# my $tree_to_remove3 = Tree::Simple.new("1.1.a");
+# and that its depth is -1
+is($tree_to_remove2.getDepth(), -1, '... the depth should be -1'); 
+# and the sub-trees depth is 0
+is($sub_tree_of_tree_to_remove2.getDepth(), 0, '... the depth should be 0'); 
 
-# # test that its a root
-# ok($tree_to_remove3.isRoot());
-
-# # and that its depth is -1
-# cmp_ok($tree_to_remove3.getDepth(), '==', -1, '... the depth should be -1'); 
-
-# # insert it into the sub_tree
-# $sub_tree.insertChild(1, $tree_to_remove3);
-
-# # test that it no longer thinks its a root
-# ok(!$tree_to_remove3.isRoot());
-
-# # check thats its depth is now 1
-# cmp_ok($tree_to_remove3.getDepth(), '==', 1, '... the depth should be 1'); 
-
-# # make sure it is there
-# is($sub_tree.getChild(1), $tree_to_remove3, '... these tree should be equal');		
-
-# # remove the subtree (it will be returned)
-# my $removed_tree3 = $sub_tree.removeChild(1);
-
-# # now check that the one removed it the one 
-# # we inserted origianlly
-# is($removed_tree3, $tree_to_remove3, '... these tree should be equal');
-
-# # it should think its a root again
-# ok($tree_to_remove3.isRoot());
-# # and its depth should be back to -1
-# cmp_ok($tree_to_remove3.getDepth(), '==', -1, '... the depth should be -1'); 
-
-# ## ----------------------------------------------
-# ## now test the edge cases
-# ## ----------------------------------------------
-
-# # trees at the end
-
-# # make a node to remove
-# my $tree_to_remove_2 = Tree::Simple.new("1.7");
-
-# # add it into the sub_tree
-# $sub_tree.addChild($tree_to_remove_2);
-
-# # make sure it is there
-# is($sub_tree.getChild($sub_tree.getChildCount() - 1), $tree_to_remove_2, '... these tree should be equal');		
-
-# # remove the subtree (it will be returned)
-# my $removed_tree_2 = $sub_tree.removeChildAt($sub_tree.getChildCount() - 1);
-
-# # now check that the one removed it the one 
-# # we inserted origianlly
-# is($removed_tree_2, $tree_to_remove_2, '... these tree should be equal');
-
-# # trees at the beginging
-
-# # make a node to remove
-# my $tree_to_remove_3 = Tree::Simple.new("1.1.-1");
-
-# # add it into the sub_tree
-# $sub_tree.insertChild(0, $tree_to_remove_3);
-
-# # make sure it is there
-# is($sub_tree.getChild(0), $tree_to_remove_3, '... these tree should be equal');		
-
-# # remove the subtree (it will be returned)
-# my $removed_tree_3 = $sub_tree.removeChildAt(0);
-
-# # now check that the one removed it the one 
-# # we inserted origianlly
-# is($removed_tree_3, $tree_to_remove_3, '... these tree should be equal');		
-
-# ## ----------------------------------------------------------------------------
-# ## test traverse
-# ## ----------------------------------------------------------------------------	
-
-# # make a control set of 
-# # all the nodes we have
-# my @_all_node_values = qw(
-# 	1.0 
-# 		1.1 
-# 		1.2
-# 		1.3
-# 		1.4
-# 		1.5
-# 		1.6
-# 	2.0
-# 		2.1
-# 			2.1.1
-# 	3.0
-# 		3.1
-# 			3.1.1
-# 			3.1.2
-# 	4.0
-# 	5.0
-# 	6.0
-# 	7.0
-# 	8.0
-# 	9.0
-# 	);
-
-# my @all_node_values;
-# # now collect the nodes in the actual tree
-# $tree.traverse(sub {
-# 	my ($_tree) = @_;
-# 	push @all_node_values => $_tree.getNodeValue();
-# 	});
-
-# # and compare the two
-# is_deeply(\@_all_node_values, \@all_node_values, '... our nodes match our control nodes');
-
-# # test traverse with both pre- and post- methods
-# # make a control set of 
-# # all the nodes we have with XML-style
-# my @_all_node_values_post_traverse = qw(
-# 	1.0 
-# 		1.1 
-#         1.1
-# 		1.2
-#         1.2
-# 		1.3
-#         1.3
-# 		1.4
-#         1.4
-# 		1.5
-#         1.5
-# 		1.6
-#         1.6
-#     1.0
-# 	2.0
-# 		2.1
-# 			2.1.1
-#             2.1.1
-#         2.1
-#     2.0
-# 	3.0
-# 		3.1
-# 			3.1.1
-#             3.1.1
-# 			3.1.2
-#             3.1.2
-#         3.1
-#     3.0
-# 	4.0
-#     4.0
-# 	5.0
-#     5.0
-# 	6.0
-#     6.0
-# 	7.0
-#     7.0
-# 	8.0
-# 	8.0
-# 	9.0
-# 	9.0
-# 	);
-
-
-# my @all_node_values_post_traverse;
-# # now collect the nodes in the actual tree
-# $tree.traverse(sub {
-# 	    my ($_tree) = @_;
-# 	    push @all_node_values_post_traverse => $_tree.getNodeValue();
-# 	},
-#     sub {
-#         my ($_tree) = @_;
-#         push @all_node_values_post_traverse => $_tree.getNodeValue();
-#     }
-# );
-
-# # and compare the two
-# is_deeply(\@_all_node_values_post_traverse, \@all_node_values_post_traverse,
-#   '... our nodes match our control nodes for post traverse method');
-
-
-# ## ----------------------------------------------------------------------------
-# ## test size
-# ## ----------------------------------------------------------------------------	
-
-# cmp_ok($tree.size(), '==', (scalar(@_all_node_values) + 1), '... our size is as we expect it to be');
-
-# # NOTE:
-# # it is (scalar(@_all_node_values) + 1) so that 
-# # we account for the root node which is not in 
-# # the list.
-
-# ## ----------------------------------------------------------------------------
-# ## test height
-# ## ----------------------------------------------------------------------------	
-
-# cmp_ok($tree.height(), '==', 4, '... our height is as we expect it to be');
-
-# ## ----------------------------------------------------------------------------
-# ## test clone
-# ## ----------------------------------------------------------------------------	
-
-# # clone the whole tree
+# insert it into the sub_tree
+#TODO need to make alias for 'insertChild' that direct to insertChildAt    
+$sub_tree.insertChildAt(1, $tree_to_remove2);
+
+# test that it no longer thinks its a root
+ok(!$tree_to_remove2.isRoot());
+
+# check thats its depth is now 1
+is($tree_to_remove2.getDepth(), 1, '... the depth should be 1'); 
+# and the sub-trees depth is 2
+is($sub_tree_of_tree_to_remove2.getDepth(), 2, '... the depth should be 2'); 
+
+# make sure it is there
+is($sub_tree.getChild(1), $tree_to_remove2, '... these tree should be equal');		
+
+# remove the subtree (it will be returned)
+
+my $removed_tree2 = $sub_tree.removeChild($tree_to_remove2);
+
+# now check that the one removed it the one 
+# we inserted origianlly
+is($removed_tree2, $tree_to_remove2, '... these tree should be equal');
+
+# it should think its a root again
+ok($tree_to_remove2.isRoot());
+# and its depth should be back to -1
+is($tree_to_remove2.getDepth(), -1, '... the depth should be -1'); 
+# and the sub-trees depth is 0
+is($sub_tree_of_tree_to_remove2.getDepth(), 0, '... the depth should be 0'); 	
+
+## ----------------------------------------------------------------------------
+## test removeChild backwards compatability
+## ----------------------------------------------------------------------------	
+
+# make a node to remove
+my $tree_to_remove3 = Tree::Simple.new("1.1.a");
+
+# test that its a root
+ok($tree_to_remove3.isRoot());
+
+# and that its depth is -1
+is($tree_to_remove3.getDepth(), -1, '... the depth should be -1'); 
+
+# insert it into the sub_tree
+#TODO need to make alias for 'insertChild' that direct to insertChildAt    
+$sub_tree.insertChildAt(1, $tree_to_remove3);
+
+# test that it no longer thinks its a root
+ok(!$tree_to_remove3.isRoot());
+
+# check thats its depth is now 1
+is($tree_to_remove3.getDepth(), 1, '... the depth should be 1'); 
+
+# make sure it is there
+is($sub_tree.getChild(1), $tree_to_remove3, '... these tree should be equal');		
+
+# remove the subtree (it will be returned)
+my $removed_tree3 = $sub_tree.removeChild(1);
+
+# now check that the one removed it the one 
+# we inserted origianlly
+is($removed_tree3, $tree_to_remove3, '... these tree should be equal');
+
+# it should think its a root again
+ok($tree_to_remove3.isRoot());
+# and its depth should be back to -1
+is($tree_to_remove3.getDepth(), -1, '... the depth should be -1'); 
+
+## ----------------------------------------------
+## now test the edge cases
+## ----------------------------------------------
+
+# trees at the end
+
+# make a node to remove
+my $tree_to_remove_2 = Tree::Simple.new("1.7");
+
+# add it into the sub_tree
+$sub_tree.addChild($tree_to_remove_2);
+
+# make sure it is there
+is($sub_tree.getChild($sub_tree.getChildCount() - 1), $tree_to_remove_2, '... these tree should be equal');		
+
+# remove the subtree (it will be returned)
+my $removed_tree_2 = $sub_tree.removeChildAt($sub_tree.getChildCount() - 1);
+
+# now check that the one removed it the one 
+# we inserted origianlly
+is($removed_tree_2, $tree_to_remove_2, '... these tree should be equal');
+
+# trees at the beginging
+
+# make a node to remove
+my $tree_to_remove_3 = Tree::Simple.new("1.1.-1");
+
+# add it into the sub_tree
+#TODO need to make alias for 'insertChild' that direct to insertChildAt    
+$sub_tree.insertChildAt(0, $tree_to_remove_3);
+
+# make sure it is there
+is($sub_tree.getChild(0), $tree_to_remove_3, '... these tree should be equal');		
+
+# remove the subtree (it will be returned)
+my $removed_tree_3 = $sub_tree.removeChildAt(0);
+
+# now check that the one removed it the one 
+# we inserted origianlly
+is($removed_tree_3, $tree_to_remove_3, '... these tree should be equal');		
+
+## ----------------------------------------------------------------------------
+## test traverse
+## ----------------------------------------------------------------------------	
+
+# make a control set of 
+# all the nodes we have
+my @_all_node_values = <
+	1.0 
+		1.1 
+		1.2
+		1.3
+		1.4
+		1.5
+		1.6
+	2.0
+		2.1
+			2.1.1
+	3.0
+		3.1
+			3.1.1
+			3.1.2
+	4.0
+	5.0
+	6.0
+	7.0
+	8.0
+	9.0
+	>;
+
+my @all_node_values;
+# now collect the nodes in the actual tree
+$tree.traverse(sub ($_tree) {
+
+ 	push @all_node_values , $_tree.getNodeValue();
+ 	});
+
+# and compare the two
+is_deeply(@_all_node_values, @all_node_values, '... our nodes match our control nodes');
+
+# test traverse with both pre- and post- methods
+# make a control set of 
+# all the nodes we have with XML-style
+my @_all_node_values_post_traverse = <
+	1.0 
+ 		1.1 
+         1.1
+ 		1.2
+         1.2
+ 		1.3
+         1.3
+ 		1.4
+         1.4
+ 		1.5
+         1.5
+ 		1.6
+         1.6
+     1.0
+ 	2.0
+ 		2.1
+ 			2.1.1
+             2.1.1
+         2.1
+     2.0
+ 	3.0
+ 		3.1
+ 			3.1.1
+             3.1.1
+ 			3.1.2
+             3.1.2
+         3.1
+     3.0
+ 	4.0
+     4.0
+ 	5.0
+     5.0
+ 	6.0
+     6.0
+ 	7.0
+     7.0
+ 	8.0
+ 	8.0
+ 	9.0
+ 	9.0
+ 	>;
+
+
+my @all_node_values_post_traverse;
+# now collect the nodes in the actual tree
+$tree.traverse(sub ($_tree) {
+ 	    push @all_node_values_post_traverse, $_tree.getNodeValue();
+ 	},
+     sub ($_tree) {
+         push @all_node_values_post_traverse, $_tree.getNodeValue();
+     }
+);
+
+# and compare the two
+is_deeply(@_all_node_values_post_traverse, @all_node_values_post_traverse,
+   '... our nodes match our control nodes for post traverse method');
+
+
+## ----------------------------------------------------------------------------
+## test size
+## ----------------------------------------------------------------------------	
+
+is($tree.size(), (@_all_node_values.elems() + 1), '... our size is as we expect it to be');
+
+# NOTE:
+# it is (scalar(@_all_node_values) + 1) so that 
+# we account for the root node which is not in 
+# the list.
+
+## ----------------------------------------------------------------------------
+## test height
+## ----------------------------------------------------------------------------	
+
+is($tree.height(), 4, '... our height is as we expect it to be');
+
+## ----------------------------------------------------------------------------
+## test clone
+## ----------------------------------------------------------------------------	
+
+# clone the whole tree
 # my $tree_clone = $tree.clone();
 
 # my @all_cloned_node_values;
-# # collect all the cloned values
+# collect all the cloned values
 # $tree_clone.traverse(sub {
 # 	my ($_tree) = @_;
 # 	push @all_cloned_node_values => $_tree.getNodeValue();
 # 	});
 
-# # make sure that our cloned values equal to our control
+# make sure that our cloned values equal to our control
 # ok eq_array(\@_all_node_values, \@all_cloned_node_values);
-# # and make sure they also match the original tree
+# and make sure they also match the original tree
 # ok eq_array(\@all_node_values, \@all_cloned_node_values);
 
-# # now change all the node values
+# now change all the node values
 # $tree_clone.traverse(sub {
 # 	my ($_tree) = @_;
 # 	$_tree.setNodeValue(". " . $_tree.getNodeValue());
 # 	});
 
 # my @all_cloned_node_values_changed;
-# # collect them again	
+# collect them again	
 # $tree_clone.traverse(sub {
 # 	my ($_tree) = @_;
 # 	push @all_cloned_node_values_changed => $_tree.getNodeValue();
 # 	});	
 
-# # make a copy of our control and cange it too	
+# make a copy of our control and cange it too	
 # my @_all_node_values_changed = map { "-> $_" } @_all_node_values;	
 
-# # now both our changed values should be correct
+# now both our changed values should be correct
 # ok eq_array(\@_all_node_values_changed, \@all_cloned_node_values_changed);
 
 # my @all_node_values_check;
-# # now traverse the original tree again and make sure
-# # that the nodes are not changed
+# now traverse the original tree again and make sure
+# that the nodes are not changed
 # $tree.traverse(sub {
 # 	my ($_tree) = @_;
 # 	push @all_node_values_check => $_tree.getNodeValue();
 # 	});
 
-# # this can be accomplished by checking them 
-# # against our control again
+# this can be accomplished by checking them 
+# against our control again
 # ok eq_array(\@_all_node_values, \@all_node_values_check);	
 	
-# ## ----------------------------------------------------------------------------
-# ## end test for Tree::Simple
-# ## ----------------------------------------------------------------------------	
+## ----------------------------------------------------------------------------
+## end test for Tree::Simple
+## ----------------------------------------------------------------------------	
