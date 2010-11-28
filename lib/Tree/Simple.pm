@@ -12,7 +12,9 @@ class Tree::Simple {
 #     $self->{_height} = 1;
 #     $self->{_width} = 1;
 
-    has $!uid;
+    #uid should be private however cannot init it a value within a new fcn
+    #will be private when submethod BUILD works
+    has $.uid is rw;
     has $.node is rw;
     has @.children is rw;
     has $.height is rw = 1;
@@ -30,17 +32,39 @@ class Tree::Simple {
 #todo need to find hash reference so we can set it to uid
     
 multi method new($node) {
-    self.bless(*, node => $node,parent => 'root');
+    my $x =self.bless(*, node => $node,parent => 'root');
+
+    #####
+    #should be in submethod BUILD
+    $x.uid = $x.WHERE;
+    
+    ###
+    
+    return $x;
 }
 
 multi method new($node,'root'){
-    self.bless(*, node => $node,parent =>'root');
+    my $x= self.bless(*, node => $node,parent =>'root');
+
+    #####
+    #should be in submethod BUILD
+    $x.uid = $x.WHERE;
+    
+    ###
+    return $x;
 }
 
 multi method new($node,$parent){
-    self.bless(*, node => $node,parent =>$parent,depth => $parent.getDepth() + 1);
-}
+    my $x = self.bless(*, node => $node,parent =>$parent,depth => $parent.getDepth() + 1);
+
+    #####
+    #should be in submethod BUILD
+    $x.uid = $x.WHERE;
     
+    ###
+    return $x;
+}
+
 
 method _init {
 #     my ($self, $node, $parent, $children) = @_;
@@ -135,10 +159,10 @@ method setNodeValue {
 #     $self->{_node} = $node_value;
 }
 
-method setUID {
-#     my ($self, $uid) = @_;
+method setUID($uid) {
 #     ($uid) || die "Insufficient Arguments : Custom Unique ID's must be a true value";
-#     $self->{_uid} = $uid;
+    
+    self.uid = $uid;
 }
 
 # ## ----------------------------------------------
@@ -316,7 +340,7 @@ method insertSiblings {
 # ## ----------------------------------------------------------------------------
 ## accessors
 #todo remove them and add the alias to the attributes
-method getUID       { $_[0]{_uid}    }
+method getUID       { $.uid;    }
 method getParent    { $.parent; }
 method getDepth     { $.depth;  }
 method getNodeValue { $.node;   }

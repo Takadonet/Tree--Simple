@@ -47,9 +47,11 @@ ok($tree ~~ Tree::Simple, 'Tree::Simple object');
 
 
 my @methods= < isRoot isLeaf setNodeValue getNodeValue getDepth fixDepth getParent 
-getChildCount addChild addChildren insertChild insertChildren removeChildAt removeChild
-getChild getAllChildren addSibling addSiblings insertSibling insertSiblings getSibling
+getChildCount addChild addChildren  removeChildAt removeChild
+getChild getAllChildren addSibling addSiblings  insertSiblings getSibling
 getAllSiblings traverse accept clone cloneShallow DESTROY getUID>;
+#insertChild insertChildren insertSibling
+
 for @methods -> $method {
     ok $tree.can($method),"Can do method '$method'";
 }
@@ -77,14 +79,13 @@ is($tree.getDepth(),  -1, '... we have no depth yet');
 is($tree.getIndex(), -1, '... root trees have no index');
 
 
-# is($tree->getUID(), $tree->getUID(), '... UIDs match for the same object');
-# is("$tree", "Tree::Simple=HASH(" . $tree->getUID() . ")", '... our UID is derived from our hex address'); 
+is($tree.getUID(), $tree.getUID(), '... UIDs match for the same object');
 
-# can_ok($tree, 'setUID');
-# $tree->setUID("This is our unique identifier");
 
-# is($tree->getUID(), 'This is our unique identifier', '... UIDs match what we have set it to');
-# isnt("$tree", "Tree::Simple=HASH(" . $tree->getUID() . ")", '... our UID is no longer derived from our hex address'); 
+ok $tree.can('setUID');
+$tree.setUID("This is our unique identifier");
+
+is($tree.getUID(), 'This is our unique identifier', '... UIDs match what we have set it to');
 
 ## ----------------------------------------------------------------------------
 ## testing adding children
