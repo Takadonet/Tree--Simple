@@ -171,11 +171,15 @@ method addChild(Tree::Simple $child) {
     self.insertChildAt($index,$child);
 }
 
+
     
-method addChildren {
-    say 'nyi';
-#     splice @_, 1, 0, $_[0]->getChildCount;
-#     goto &insertChildren;
+    
+method addChildren(@children) {
+    my $index;
+    for @children -> $child {
+        $index = self.getChildCount();
+        self.insertChildAt($index,$child);        
+    }
 }
 
     
@@ -373,11 +377,9 @@ method getSibling {
 }
 
 method getAllSiblings {
-        say 'nyi';
-#     my ($self) = @_;
-#     (!$self->isRoot()) 
-#         || die "Insufficient Arguments : cannot get siblings from a ROOT tree";    
-#     $self->getParent()->getAllChildren();
+     (!self.isRoot()) 
+         || die "Insufficient Arguments : cannot get siblings from a ROOT tree";
+    self.getParent().getAllChildren();
 }
 
 # ## ----------------------------------------------------------------------------

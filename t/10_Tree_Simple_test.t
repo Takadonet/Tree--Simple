@@ -285,118 +285,121 @@ is($tree, $sub_tree_3.getParent(), '... make sure our sub_tree_3 parent is tree'
 ## test getting all children and siblings
 ## ----------------------------------------------------------------------------	
 
-# # get it in scalar context and
-# # check that our arrays are equal
-# my $children = $tree.getAllChildren();
-# ok eq_array($children, [ $sub_tree, $sub_tree_2, $sub_tree_3, $sub_tree_4 ]);
+# get it in scalar context and
+# check that our arrays are equal
+my $children = $tree.getAllChildren();
 
-# # get it in array context and
-# # check that our arrays are equal
-# my @children = $tree.getAllChildren();
-# ok eq_array(\@children, [ $sub_tree, $sub_tree_2, $sub_tree_3, $sub_tree_4 ]);
+is_deeply($children, [ $sub_tree, $sub_tree_2, $sub_tree_3, $sub_tree_4]);
 
-# # check that the values from both
-# # contexts are equal to one another
-# ok eq_array($children, \@children);
+# get it in array context and
+# check that our arrays are equal
+my @children = $tree.getAllChildren();
+is_deeply(@children, [ $sub_tree, $sub_tree_2, $sub_tree_3, $sub_tree_4 ]);
 
-# # now check that the siblings of all the 
-# # sub_trees are the same as the children
-# foreach my $_sub_tree (@children) {
-# 	# test siblings in scalar context
-# 	my $siblings = $sub_tree.getAllSiblings();
-# 	ok eq_array($children, $siblings);
-# 	# and now in array context
-# 	my @siblings = $sub_tree.getAllSiblings();
-# 	ok eq_array($children, \@siblings);
-# }
+# check that the values from both
+# contexts are equal to one another
+is_deeply($children, @children);
 
-# ## ----------------------------------------------------------------------------
-# ## test addChildren
-# ## ----------------------------------------------------------------------------	
+# now check that the siblings of all the 
+# sub_trees are the same as the children
+for @children ->  $_sub_tree {
+	# test siblings in scalar context
+	my $siblings = $sub_tree.getAllSiblings();
+	is_deeply($children, $siblings);
+	# and now in array context
+	my @siblings = $sub_tree.getAllSiblings();
+	is_deeply($children, @siblings);
+}
 
-# my @sub_children = (
-#  			Tree::Simple.new("1.1"),
-# 			Tree::Simple.new("1.5"),
-# 			Tree::Simple.new("1.6")
-# 			);
+## ----------------------------------------------------------------------------
+## test addChildren
+## ----------------------------------------------------------------------------	
 
-# # now go through the children and test them
-# foreach my $sub_child (@sub_children) {
-# 	# they should think they are root
-# 	ok($sub_child.isRoot());
+my @sub_children = (
+ 			Tree::Simple.new("1.1"),
+			Tree::Simple.new("1.5"),
+			Tree::Simple.new("1.6")
+			);
 
-# 	# and they should all be leaves
-# 	ok($sub_child.isLeaf());
+# now go through the children and test them
+for @sub_children ->  $sub_child {
+ 	# they should think they are root
+ 	ok($sub_child.isRoot());
 
-# 	# and their node values
+ 	# and they should all be leaves
+ 	ok($sub_child.isLeaf());
+
+ 	# and their node values
+        #todo nyi in Test.pm
 # 	like($sub_child.getNodeValue(), qr/1\.[0-9]/, '... they at least have "1." followed by a digit');
 	
-# 	# and they should all have a depth of -1
-# 	cmp_ok($sub_child.getDepth(), '==', -1, '... depth should be -1');	
-# }
+ 	# and they should all have a depth of -1
+ 	is($sub_child.getDepth(), -1, '... depth should be -1');	
+}
 
-# # check to see if we can add children
-# $sub_tree.addChildren(@sub_children);
+# check to see if we can add children
+$sub_tree.addChildren(@sub_children);
 
-# # we are no longer a leaf node now
-# ok(!$sub_tree.isLeaf());
+# we are no longer a leaf node now
+ok(!$sub_tree.isLeaf());
 
-# # make sure that we now have 3 children now	
-# cmp_ok($sub_tree.getChildCount(), '==', 3, '... we should have 3 children now');
+# make sure that we now have 3 children now	
+is($sub_tree.getChildCount(), 3, '... we should have 3 children now');
 
-# # now check that sub_tree's children 
-# # are the same as our list
-# ok eq_array([ $sub_tree.getAllChildren() ], \@sub_children);
+# now check that sub_tree's children 
+# are the same as our list
+is_deeply([ $sub_tree.getAllChildren() ], @sub_children);
 
-# # now go through the children again
-# # and test them
-# foreach my $sub_child (@sub_children) {
-# 	# they should no longer think
-# 	# they are root
-# 	ok(!$sub_child.isRoot());
+# now go through the children again
+# and test them
+for @sub_children -> $sub_child {
+ 	# they should no longer think
+ 	# they are root
+ 	ok(!$sub_child.isRoot());
 	
-# 	# but they should still think they 
-# 	# are leaves
-# 	ok($sub_child.isLeaf());
+ 	# but they should still think they 
+ 	# are leaves
+ 	ok($sub_child.isLeaf());
 	
-# 	# now we test their parental relationship
-# 	is($sub_tree, $sub_child.getParent(), '... their parent is the sub_tree');
+ 	# now we test their parental relationship
+ 	is($sub_tree, $sub_child.getParent(), '... their parent is the sub_tree');
 	
-# 	# and they should all have a depth of 1
-# 	cmp_ok($sub_child.getDepth(), '==', 1, '... depth should be 1');
+ 	# and they should all have a depth of 1
+ 	is($sub_child.getDepth(), 1, '... depth should be 1');
 	
-# 	# now check that its siblings are the same 
-# 	# as the children of its parent			
-# 	ok eq_array([ $sub_tree.getAllChildren() ], [ $sub_child.getAllSiblings() ]);
-# }
+ 	# now check that its siblings are the same 
+ 	# as the children of its parent			
+ 	is_deeply([ $sub_tree.getAllChildren() ], [ $sub_child.getAllSiblings() ]);
+}
 
-# ## ----------------------------------------------------------------------------
-# ## test insertingChildren
-# ## ----------------------------------------------------------------------------	
+## ----------------------------------------------------------------------------
+## test insertingChildren
+## ----------------------------------------------------------------------------	
 
-# my @more_sub_children = (
-#  			Tree::Simple.new("1.2"),
-# 			Tree::Simple.new("1.3"),
-# 			Tree::Simple.new("1.4")
-# 			);
+my @more_sub_children = (
+  			Tree::Simple.new("1.2"),
+ 			Tree::Simple.new("1.3"),
+ 			Tree::Simple.new("1.4")
+			);
 
-# # now go through the children and test them
-# foreach my $sub_child (@more_sub_children) {
-# 	# they should think they are root
-# 	ok($sub_child.isRoot());
+# now go through the children and test them
+for @more_sub_children -> $sub_child {
+ 	# they should think they are root
+ 	ok($sub_child.isRoot());
 
-# 	# and they should all be leaves
-# 	ok($sub_child.isLeaf());
+ 	# and they should all be leaves
+ 	ok($sub_child.isLeaf());
 
-# 	# and their node values
+ 	# and their node values
+        #todo nyi in Test.pm
 # 	like($sub_child.getNodeValue(), qr/1\.[0-9]/, '... they at least have "1." followed by a digit');
 	
-# 	# and they should all have a depth of -1
-# 	cmp_ok($sub_child.getDepth(), '==', -1, '... depth should be -1');	
-# }
+ 	# and they should all have a depth of -1
+ 	is($sub_child.getDepth(), -1, '... depth should be -1');	
+}
 
-# # check to see if we can insert children
-# $sub_tree.insertChildren(1, @more_sub_children);
+# check to see if we can insert children
+#$sub_tree.insertChildren(1, @more_sub_children);
 
 # # make sure that we now have 6 children now	
 # cmp_ok($sub_tree.getChildCount(), '==', 6, '... we should have 6 children now');
