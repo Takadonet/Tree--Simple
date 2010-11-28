@@ -1,6 +1,6 @@
 use v6;
 use Test;
-plan 292;
+plan 273;
 BEGIN
 {
     @*INC.push('lib');
@@ -984,7 +984,7 @@ is_deeply(@_all_node_values_post_traverse, @all_node_values_post_traverse,
 is($tree.size(), (@_all_node_values.elems() + 1), '... our size is as we expect it to be');
 
 # NOTE:
-# it is (scalar(@_all_node_values) + 1) so that 
+# it is (@_all_node_values.elems() + 1) so that 
 # we account for the root node which is not in 
 # the list.
 
@@ -999,50 +999,48 @@ is($tree.height(), 4, '... our height is as we expect it to be');
 ## ----------------------------------------------------------------------------	
 
 # clone the whole tree
-# my $tree_clone = $tree.clone();
+my $tree_clone = $tree.clone();
 
-# my @all_cloned_node_values;
+my @all_cloned_node_values;
 # collect all the cloned values
-# $tree_clone.traverse(sub {
-# 	my ($_tree) = @_;
-# 	push @all_cloned_node_values => $_tree.getNodeValue();
-# 	});
+$tree_clone.traverse(sub ($_tree){
+	push @all_cloned_node_values, $_tree.getNodeValue();
+	});
 
 # make sure that our cloned values equal to our control
-# ok eq_array(\@_all_node_values, \@all_cloned_node_values);
+is_deeply(@_all_node_values, @all_cloned_node_values);
 # and make sure they also match the original tree
-# ok eq_array(\@all_node_values, \@all_cloned_node_values);
+is_deeply(@all_node_values, @all_cloned_node_values);
 
 # now change all the node values
-# $tree_clone.traverse(sub {
-# 	my ($_tree) = @_;
-# 	$_tree.setNodeValue(". " . $_tree.getNodeValue());
-# 	});
+$tree_clone.traverse(sub ($_tree){
+ 	$_tree.setNodeValue(". " ~ $_tree.getNodeValue());
+ 	});
 
-# my @all_cloned_node_values_changed;
+my @all_cloned_node_values_changed;
 # collect them again	
-# $tree_clone.traverse(sub {
-# 	my ($_tree) = @_;
-# 	push @all_cloned_node_values_changed => $_tree.getNodeValue();
-# 	});	
+$tree_clone.traverse(sub ($_tree) {
+ 	push @all_cloned_node_values_changed , $_tree.getNodeValue();
+ 	});	
 
-# make a copy of our control and cange it too	
-# my @_all_node_values_changed = map { "-> $_" } @_all_node_values;	
+# make a copy of our control and cange it too
+#todo no idea why it was '->' to '.' made it work...
+#my @_all_node_values_changed = map { "-> $_" }, @_all_node_values;
+my @_all_node_values_changed = map { ". $_" }, @_all_node_values;	
 
 # now both our changed values should be correct
-# ok eq_array(\@_all_node_values_changed, \@all_cloned_node_values_changed);
+is_deeply(@_all_node_values_changed, @all_cloned_node_values_changed);
 
-# my @all_node_values_check;
+my @all_node_values_check;
 # now traverse the original tree again and make sure
 # that the nodes are not changed
-# $tree.traverse(sub {
-# 	my ($_tree) = @_;
-# 	push @all_node_values_check => $_tree.getNodeValue();
-# 	});
+$tree.traverse(sub ($_tree){
+	push @all_node_values_check , $_tree.getNodeValue();
+	});
 
 # this can be accomplished by checking them 
 # against our control again
-# ok eq_array(\@_all_node_values, \@all_node_values_check);	
+is_deeply(@_all_node_values, @all_node_values_check);	
 	
 ## ----------------------------------------------------------------------------
 ## end test for Tree::Simple

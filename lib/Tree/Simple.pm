@@ -147,11 +147,9 @@ multi method setWidth(Int $child_width) {
 # ## ----------------------------------------------------------------------------
 # ## mutators
 
-method setNodeValue {
-    say 'nyi';
-#     my ($self, $node_value) = @_;
-#     (defined($node_value)) || die "Insufficient Arguments : must supply a value for node";
-#     $self->{_node} = $node_value;
+method setNodeValue($node_value) {
+    ($node_value) || die "Insufficient Arguments : must supply a value for node";
+    self.node = $node_value;
 }
 
 method setUID($uid) {
@@ -503,7 +501,7 @@ method accept {
 
 method clone() {
     # first clone the value in the node
-#    my $cloned_node = cloneNode(self.getNodeValue());
+    my $cloned_node = cloneNode(self.getNodeValue());
     # create a new Tree::Simple object 
     # here with the cloned node, however
     # we do not assign the parent node
@@ -513,17 +511,17 @@ method clone() {
     # which IMO is not intuitive. So in essence
     # when you clone a tree, you detach it from
     # any parentage it might have
-#    my $clone = self.new($cloned_node);
+    my $clone = self.new($cloned_node);
     # however, because it is a recursive thing
     # when you clone all the children, and then
     # add them to the clone, you end up setting
     # the parent of the children to be that of
     # the clone (which is correct)
-#    $clone.addChildren(
-#                map { $_->clone() } $self->getAllChildren()
-#                ) unless self.isLeaf();
+    $clone.addChildren(
+                map { $_.clone() }, self.getAllChildren()
+                ) unless self.isLeaf();
     # return the clone            
-#    return $clone;
+    return $clone;
 }
     
 # # this allows cloning of single nodes while 
@@ -538,22 +536,46 @@ method cloneShallow {
 #     return $cloned_tree;    
 }
 
+# multi method cloneNode(@nodes){
+        
+
+# }
+
+# multi method cloneNode(%nodes){
+        
+
+# }
+    
+    
+    
 # # this is a helper function which 
 # # recursively clones the node
-method _cloneNode {
-    say 'nyi';    
+multi sub cloneNode($node,%seen?) {
 #     my ($node, $seen) = @_;
 #     # create a cache if we dont already
 #     # have one to prevent circular refs
 #     # from being copied more than once
 #     $seen = {} unless defined $seen;
 #     # now here we go...
-#     my $clone;
-#     # if it is not a reference, then lets just return it
-#     return $node unless ref($node);
-#     # if it is in the cache, then return that
+    my $clone;
+    # if it is not a reference, then lets just return it
+    return $node unless $node ~~ Tree::Simple;
+    # if it is in the cache, then return that
+#    return %seen{$node} if exists ${$seen}{$node};    
 #     return $seen->{$node} if exists ${$seen}{$node};
-#     # if it is an object, then ...    
+    # if it is an object, then ...
+    if $node ~~ Tree::Simple {
+        # see if we can clone it
+        if $node.can('clone') {
+            $clone = $node.clone();
+        }
+        # otherwise respect that it does 
+        # not want to be cloned
+        else {
+            $clone = $node;
+        }        
+    }
+        #todo need to  worry about non blessed objects
 #     if (blessed($node)) {
 #         # see if we can clone it
 #         if ($node->can('clone')) {
@@ -591,10 +613,11 @@ method _cloneNode {
 #             $clone = $node;
 #         }
 #     }
-#     # store the clone in the cache and 
-#     $seen->{$node} = $clone;        
-#     # then return the clone
-#     return $clone;
+        
+    # store the clone in the cache and 
+    %seen{$node} = $clone;        
+    # then return the clone
+    return $clone;
 }
 
 
