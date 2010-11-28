@@ -29,7 +29,19 @@ class Tree::Simple {
 
 
 # ### constructor
-#todo need to find hash reference so we can set it to uid
+
+multi method new(){
+    my $x =self.bless(*, node => '',parent => 'root');
+
+    #####
+    #should be in submethod BUILD
+    $x.uid = $x.WHERE;
+    
+    ###
+    
+    return $x;
+}
+    
     
 multi method new($node) {
     my $x =self.bless(*, node => $node,parent => 'root');
@@ -357,7 +369,7 @@ method getHeight    { $.height; }
 
 method getChildCount {
     #$#{$_[0]{_children}} + 1
-    @.children.elems();
+    return @.children.elems();
     
 }
 
