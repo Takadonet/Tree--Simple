@@ -67,6 +67,8 @@ multi method new($node,$parent){
 
 
 method _init {
+    say 'nyi';
+    
 #     my ($self, $node, $parent, $children) = @_;
 
 #     # Now check our $parent value
@@ -104,6 +106,7 @@ method setParent($parent) {
 }
 
 method _detachParent {
+    say 'nyi';
 #     return if $USE_WEAK_REFS;
 #     my ($self) = @_;
 #     $self->{_parent} = undef;
@@ -145,6 +148,7 @@ multi method setWidth(Int $child_width) {
 # ## mutators
 
 method setNodeValue {
+    say 'nyi';
 #     my ($self, $node_value) = @_;
 #     (defined($node_value)) || die "Insufficient Arguments : must supply a value for node";
 #     $self->{_node} = $node_value;
@@ -169,6 +173,7 @@ method addChild(Tree::Simple $child) {
 
     
 method addChildren {
+    say 'nyi';
 #     splice @_, 1, 0, $_[0]->getChildCount;
 #     goto &insertChildren;
 }
@@ -218,6 +223,7 @@ method insertChildAt(Int $index where { $index >= 0 },*@trees where { @trees.ele
 #*insertChild = \&insertChildren;
 
 method removeChildAt {
+    say 'nyi';
 #     my ($self, $index) = @_;
 #     (defined($index)) 
 #         || die "Insufficient Arguments : Cannot remove child without index.";
@@ -261,6 +267,7 @@ method removeChildAt {
 }
 
 method removeChild {
+    say 'nyi';    
 #     my ($self, $child_to_remove) = @_;
 #     (defined($child_to_remove))
 #         || die "Insufficient Arguments : you must specify a child to remove";
@@ -315,6 +322,7 @@ method addSiblings {
 }
 
 method insertSiblings {
+    say 'nyi';    
 #     my ($self, @args) = @_;
 #     (!$self->isRoot()) 
 #         || die "Insufficient Arguments : cannot insert sibling(s) to a ROOT tree";
@@ -357,6 +365,7 @@ method getAllChildren {
 }
 
 method getSibling {
+        say 'nyi';
 #     my ($self, $index) = @_;
 #     (!$self->isRoot()) 
 #         || die "Insufficient Arguments : cannot get siblings from a ROOT tree";    
@@ -364,6 +373,7 @@ method getSibling {
 }
 
 method getAllSiblings {
+        say 'nyi';
 #     my ($self) = @_;
 #     (!$self->isRoot()) 
 #         || die "Insufficient Arguments : cannot get siblings from a ROOT tree";    
@@ -374,7 +384,6 @@ method getAllSiblings {
 # ## informational
 
 method isLeaf {
-#    $_[0]->getChildCount == 0
     self.getChildCount() == 0;
 }
 
@@ -383,6 +392,7 @@ method isRoot {
 }
 
 method size {
+        say 'nyi';
 #     my ($self) = @_;
 #     my $size = 1;
 #     foreach my $child ($self->getAllChildren()) {
@@ -429,6 +439,7 @@ method fixDepth {
 # # discrepencies which might arise when 
 # # you remove a sub-tree
 method fixHeight {
+    say 'nyi';
 #     my ($self) = @_;
 #     # we must find the tallest sub-tree
 #     # and use that to define the height
@@ -451,6 +462,7 @@ method fixHeight {
 }
 
 method fixWidth {
+    say 'nyi';    
 #     my ($self) = @_;
 #     my $fixed_width = 0;
 #     $fixed_width += $_->getWidth() foreach $self->getAllChildren();
@@ -459,6 +471,7 @@ method fixWidth {
 }
 
 method traverse {
+    say 'nyi';    
 #     my ($self, $func, $post) = @_;
 #     (defined($func)) || die "Insufficient Arguments : Cannot traverse without traversal function";
 #     (ref($func) eq "CODE") || die "Incorrect Object Type : traversal function is not a function";
@@ -475,6 +488,7 @@ method traverse {
 # # old accept method, it now it more
 # # accepting of its arguments
 method accept {
+    say 'nyi';    
 #     my ($self, $visitor) = @_;
 #     # it must be a blessed reference and ...
 #     (blessed($visitor) && 
@@ -490,6 +504,7 @@ method accept {
 # ## cloning 
 
 method clone {
+    say 'nyi';    
 #     my ($self) = @_;
 #     # first clone the value in the node
 #     my $cloned_node = _cloneNode($self->getNodeValue());
@@ -518,6 +533,7 @@ method clone {
 # # this allows cloning of single nodes while 
 # # retaining connections to a tree, this is sloppy
 method cloneShallow {
+    say 'nyi';    
 #     my ($self) = @_;
 #     my $cloned_tree = { %{$self} };
 #     bless($cloned_tree, ref($self));    
@@ -529,6 +545,7 @@ method cloneShallow {
 # # this is a helper function which 
 # # recursively clones the node
 method _cloneNode {
+    say 'nyi';    
 #     my ($node, $seen) = @_;
 #     # create a cache if we dont already
 #     # have one to prevent circular refs
@@ -589,6 +606,7 @@ method _cloneNode {
 # ## Desctructor
 
 method DESTROY {
+    say 'nyi';    
 #     # if we are using weak refs 
 #     # we dont need to worry about
 #     # destruction, it will just happen
