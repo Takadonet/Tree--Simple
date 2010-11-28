@@ -60,7 +60,7 @@ multi method new($node,$parent){
     #####
     #should be in submethod BUILD
     $x.uid = $x.WHERE;
-    
+    $parent.addChild($x);
     ###
     return $x;
 }
@@ -68,14 +68,7 @@ multi method new($node,$parent){
 
 method _init {
 #     my ($self, $node, $parent, $children) = @_;
-#     # set the value of the unique id
-#     ($self->{_uid}) = ("$self" =~ /\((.*?)\)$/);
-#     # set the value of the node
-#     $self->{_node} = $node;
-#     # and set the value of _children
-#     $self->{_children} = $children;    
-#     $self->{_height} = 1;
-#     $self->{_width} = 1;
+
 #     # Now check our $parent value
 #     if (defined($parent)) {
 #         if (blessed($parent) && $parent->isa("Tree::Simple")) {
@@ -106,8 +99,6 @@ method setParent($parent) {
          $._depth = -1;
      }
      else {
-#         weaken($self->{_parent}) if $USE_WEAK_REFS;    
-#         $self->{_depth} = $parent->getDepth() + 1;
          $.depth = $parent.getDepth() + 1;
      }
 }
@@ -182,6 +173,7 @@ method addChildren {
 #     goto &insertChildren;
 }
 
+    
     #need to have an index and at least one child
 method insertChildAt(Int $index where { $index >= 0 },*@trees where { @trees.elems() > 0 }) {
      # check the bounds of our children 
@@ -214,8 +206,8 @@ method insertChildAt(Int $index where { $index >= 0 },*@trees where { @trees.ele
     }
     # otherwise do some heavy lifting here
     else {
-        say 'nyi 199';
-#        splice @{$self->{_children}}, $index, 0, @trees;
+        splice self.children, $index,0, @trees;
+#       splice @{$self->{_children}}, $index, 0, @trees;
     }
 }
 
@@ -223,7 +215,7 @@ method insertChildAt(Int $index where { $index >= 0 },*@trees where { @trees.ele
 
 # # insertChild is really the same as insertChildren, you are just
 # # inserting an array of one tree
-# *insertChild = \&insertChildren;
+#*insertChild = \&insertChildren;
 
 method removeChildAt {
 #     my ($self, $index) = @_;
