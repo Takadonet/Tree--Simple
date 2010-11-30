@@ -142,11 +142,15 @@ method setHeight(Tree::Simple $child) {
 }
 
 multi method setWidth(Tree::Simple $child_width) {
-     return if self.width > self.getChildCount();    
-
-     self.width += $child_width.getWidth();
+    return if self.width > self.getChildCount();    
+    my $width = $child_width.getWidth();
+    self.width += $width;
+    
      # and now bubble up to the parent (unless we are the root)
-     self.getParent().setWidth($child_width) unless self.isRoot();            
+    if !self.isRoot() {
+        self.getParent().setWidth($width);
+    }
+    
 }
     
     
