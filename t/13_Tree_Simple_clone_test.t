@@ -1,16 +1,18 @@
-# #!/usr/bin/perl
+use v6;
+use Test;
+plan 48;
+BEGIN
+{
+    @*INC.push('lib');
+    @*INC.push('blib');
+}
 
-# use strict;
-# use warnings;
+use Tree::Simple;
 
-# use Test::More tests => 48;
-
-# ## ----------------------------------------------------------------------------
-# # NOTE:
-# # This specifically tests the details of the cloning functions
-# ## ----------------------------------------------------------------------------
-
-# use Tree::Simple;
+## ----------------------------------------------------------------------------
+# NOTE:
+# This specifically tests the details of the cloning functions
+## ----------------------------------------------------------------------------
 
 # my $tree = Tree::Simple->new(Tree::Simple->ROOT);
 # isa_ok($tree, 'Tree::Simple');
