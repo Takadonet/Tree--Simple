@@ -66,7 +66,10 @@ multi method new($node,'root'){
     return $x;
 }
 
+#todo might be a rakudo bug where i cannot put the object type in the signatures without failing..
 multi method new($node,$parent){
+    die 'Parent is not a Tree::Simple' if $parent !~~ Tree::Simple;
+    
     my $x = self.bless(*, node => $node,parent =>$parent,depth => $parent.getDepth() + 1);
 
     #####
@@ -483,7 +486,7 @@ method fixWidth {
     self.getParent().fixWidth() unless self.isRoot();
 }
 
-method traverse($func,$post?) {
+method traverse(Code $func,Code $post?) {
 #     my ($self, $func, $post) = @_;
 #     (defined($func)) || die "Insufficient Arguments : Cannot traverse without traversal function";
 #     (ref($func) eq "CODE") || die "Incorrect Object Type : traversal function is not a function";
