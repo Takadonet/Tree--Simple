@@ -502,8 +502,12 @@ method traverse(Code $func,Code $post?) {
 # # this is an improved version of the 
 # # old accept method, it now it more
 # # accepting of its arguments
-method accept {
-    say 'nyi';    
+
+method accept($visitor) {
+
+    #todo check to ensure that the $visitor has the 'visit' fcn
+#    die '$Visitor is not a valid Visitor object' if $visitor !~~ Tree::Simple::Visitor;
+
 #     my ($self, $visitor) = @_;
 #     # it must be a blessed reference and ...
 #     (blessed($visitor) && 
@@ -512,9 +516,12 @@ method accept {
 #             # it must be an object which has a 'visit' method avaiable
 #             $visitor->can('visit')))
 #         || die "Insufficient Arguments : You must supply a valid Visitor object";
-#     $visitor->visit($self);
+     $visitor.visit(self);
 }
+    
 
+
+    
 # ## ----------------------------------------------------------------------------
 # ## cloning 
 

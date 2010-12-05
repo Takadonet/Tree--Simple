@@ -1,7 +1,9 @@
 class Tree::Simple::Visitor{
-
-
 #our $VERSION = '1.11';
+
+#todo remove this later when doing testing
+
+use Tree::Simple;
 
  
 ## class constants
@@ -9,8 +11,29 @@ class Tree::Simple::Visitor{
 # use constant RECURSIVE     => 0x01;
 # use constant CHILDREN_ONLY => 0x10;
 
-### constructor
+    #should be an enum since only two value or an integer
+    #RECURSIVE CHILDREN_ONLY
+has $.depth is rw ;
+    
+has Code $.filter_fcn is rw;
+has Bool $.include_trunk is rw = Bool::False;
+has @.results is rw;
 
+### constructor
+multi method new(){
+self.bless(*, depth => 'RECURSIVE');
+}
+
+multi method new(Code $func) {
+	self.bless(*, depth => 0,filter_fcn => $func, include_trunk=>Bool::True);
+}
+
+#check to see if $depth is a integer or RECURSIVE or CHILDREN_ONLY
+multi method new(Code $func,$depth) {
+	self.bless(*, depth => $depth,filter_fcn => $func, include_trunk=>Bool::True);
+}
+
+    
 # sub new {
 # 	my ($_class, $func, $depth) = @_;
 # 	if (defined($depth)){
@@ -42,74 +65,73 @@ class Tree::Simple::Visitor{
 #     $self->{_results} = [];
 # }
 
-# sub includeTrunk {
-#     my ($self, $boolean) = @_;
-#     $self->{_include_trunk} = ($boolean ? 1 : 0) if defined $boolean;
-#     return $self->{_include_trunk};
-# }
+#if given Mu, don't die but do nothing. Do not believe it should set to Bool::True
+multi method includeTrunk(Mu){ };
 
+multi method includeTrunk(''){
+	self.include_trunk = Bool::False;
+}
+
+multi method includeTrunk() {
+    return self.include_trunk;
+}
+
+multi method includeTrunk(Bool $trunk) {
+    self.include_trunk = $trunk;
+}
+#if given Mu, don't die but do nothing. Do not believe it should set to Bool::True
 # # node filter methods
 
-# sub getNodeFilter {
-#     my ($self) = @_;
-# 	return $self->{_filter_function}; 
-# }
+method getNodeFilter() {
+ 	return self.filter_fcn; 
+}
 
-# sub clearNodeFilter {
-#     my ($self) = @_;
-# 	$self->{_filter_function} = undef;     
-# }
+method clearNodeFilter() {
+    self.filter_fcn = Mu;     
+}
 
-# sub setNodeFilter {
-#     my ($self, $filter_function) = @_;
-# 	(defined($filter_function) && ref($filter_function) eq "CODE") 
-# 		|| die "Insufficient Arguments : filter function argument must be a subroutine reference";
-# 	$self->{_filter_function} = $filter_function; 
-# }
+method setNodeFilter(Code $filter_fcn) {
+ 	self.filter_fcn = $filter_fcn; 
+}
 
-# # results methods 
+# # resultscn methods 
 
 # sub setResults {
 #     my ($self, @results) = @_;
 #     $self->{results} = \@results;
 # }
 
-# sub getResults {
-#     my ($self) = @_;
-#     return wantarray ?
-#              @{$self->{results}}
-#              :
-#              $self->{results};
-# }
+method getResults() {
+    return @.results;
+}
 
-# # visit routine
-# sub visit {
-# 	my ($self, $tree) = @_;
-# 	(blessed($tree) && $tree->isa("Tree::Simple"))
-# 		|| die "Insufficient Arguments : You must supply a valid Tree::Simple object";
-#     # get all things set up
-# 	my @results;
-# 	my $func;
-#     if ($self->{_filter_function}) {
-#         $func = sub { push @results => $self->{_filter_function}->(@_) };    
-#     }
-#     else {
-#         $func = sub { push @results => $_[0]->getNodeValue() }; 
-#     }
-# 	# always apply the function 
-# 	# to the tree's node
-#     $func->($tree) unless defined $self->{_include_trunk};
-# 	# then recursively to all its children
-# 	# if the object is configured that way
-# 	$tree->traverse($func) if ($self->{depth} == RECURSIVE);
-# 	# or just visit its immediate children
-# 	# if the object is configured that way
-# 	if ($self->{depth} == CHILDREN_ONLY) {
-# 		$func->($_) foreach $tree->getAllChildren();
-# 	}
-#     # now store the results we got
-#     $self->setResults(@results);
-# }
+# visit routine
+method visit(Tree::Simple $tree) {
+    # get all things set up
+    my @results;
+    my $func;
+    if self.filter_fcn {
+        $func = sub (*@a) { push @results , self.filter_fcn.(@a) };    
+    }
+    else {
+        $func = sub (*@a) { push @results , @a[0].getNodeValue() }; 
+    }
+    # always apply the function 
+    # to the tree's node
+    $func.($tree) if self.include_trunk;
+    # then recursively to all its children
+    # if the object is configured that way
+    $tree.traverse($func) if self.depth eq 'RECURSIVE';
+    # or just visit its immediate children
+    # if the object is configured that way
+    if self.depth eq 'CHILDREN_ONLY' {
+        for $tree.getAllChildren() -> $x {
+            $func.($x);
+        }
+    }
+    # now store the results we got
+    self.results = @results;
+}
 
 }
 
