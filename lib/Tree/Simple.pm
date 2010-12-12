@@ -410,27 +410,27 @@ method size() {
 }
 
 ## ----------------------------------------------------------------------------
-## misc
+# misc
 
-# # NOTE:
-# # Occasionally one wants to have the 
-# # depth available for various reasons
-# # of convience. Sometimes that depth 
-# # field is not always correct.
-# # If you create your tree in a top-down
-# # manner, this is usually not an issue
-# # since each time you either add a child
-# # or create a tree you are doing it with 
-# # a single tree and not a hierarchy.
-# # If however you are creating your tree
-# # bottom-up, then you might find that 
-# # when adding hierarchies of trees, your
-# # depth fields are all out of whack.
-# # This is where this method comes into play
-# # it will recurse down the tree and fix the
-# # depth fields appropriately.
-# # This method is called automatically when 
-# # a subtree is added to a child array
+# NOTE:
+# Occasionally one wants to have the 
+# depth available for various reasons
+# of convience. Sometimes that depth 
+# field is not always correct.
+# If you create your tree in a top-down
+# manner, this is usually not an issue
+# since each time you either add a child
+# or create a tree you are doing it with 
+# a single tree and not a hierarchy.
+# If however you are creating your tree
+# bottom-up, then you might find that 
+# when adding hierarchies of trees, your
+# depth fields are all out of whack.
+# This is where this method comes into play
+# it will recurse down the tree and fix the
+# depth fields appropriately.
+# This method is called automatically when 
+# a subtree is added to a child array
 method fixDepth {
     # make sure the tree's depth 
     # is up to date all the way down
@@ -441,10 +441,10 @@ method fixDepth {
     );
 }
 
-# # NOTE:
-# # This method is used to fix any height 
-# # discrepencies which might arise when 
-# # you remove a sub-tree
+# NOTE:
+# This method is used to fix any height 
+# discrepencies which might arise when 
+# you remove a sub-tree
 method fixHeight {
     # we must find the tallest sub-tree
     # and use that to define the height
@@ -477,11 +477,6 @@ method fixWidth {
 }
 
 method traverse(Code $func,Code $post?) {
-#     my ($self, $func, $post) = @_;
-#     (defined($func)) || die "Insufficient Arguments : Cannot traverse without traversal function";
-#     (ref($func) eq "CODE") || die "Incorrect Object Type : traversal function is not a function";
-#     (ref($post) eq "CODE") || die "Incorrect Object Type : post traversal function is not a function"
-#         if defined($post);
     for self.getAllChildren() -> $child { 
         $func.($child);
         $child.traverse($func, $post);
@@ -489,15 +484,15 @@ method traverse(Code $func,Code $post?) {
     }
 }
 
-# # this is an improved version of the 
-# # old accept method, it now it more
-# # accepting of its arguments
+# this is an improved version of the 
+# old accept method, it now it more
+# accepting of its arguments
 
 method accept($visitor) {
 
     #todo check to ensure that the $visitor has the 'visit' fcn
 #    die '$Visitor is not a valid Visitor object' if $visitor !~~ Tree::Simple::Visitor;
-
+	
 #     my ($self, $visitor) = @_;
 #     # it must be a blessed reference and ...
 #     (blessed($visitor) && 
@@ -506,7 +501,7 @@ method accept($visitor) {
 #             # it must be an object which has a 'visit' method avaiable
 #             $visitor->can('visit')))
 #         || die "Insufficient Arguments : You must supply a valid Visitor object";
-     $visitor.visit(self);
+	$visitor.visit(self);
 }
     
 
