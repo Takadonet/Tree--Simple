@@ -81,12 +81,10 @@ method setParent($parent) {
          $.depth = $parent.getDepth() + 1;
      }
 }
-
-method _detachParent {
-    say 'nyi';
+#todo make private
+method !detachParent() {
 #     return if $USE_WEAK_REFS;
-#     my ($self) = @_;
-#     $self->{_parent} = undef;
+     self.parent = Mu;
 }
 
 method setHeight(Tree::Simple $child) {
@@ -600,28 +598,27 @@ multi sub cloneNode($node,%seen?) {
 }
 
 
-# ## ----------------------------------------------------------------------------
-# ## Desctructor
+## ----------------------------------------------------------------------------
+## Desctructor
 
-method DESTROY {
-    say 'nyi';    
-#     # if we are using weak refs 
-#     # we dont need to worry about
-#     # destruction, it will just happen
-#     return if $USE_WEAK_REFS;
-#     my ($self) = @_;
-#     # we want to detach all our children from 
-#     # ourselves, this will break most of the 
-#     # connections and allow for things to get
-#     # reaped properly
-#     unless (!$self->{_children} && scalar(@{$self->{_children}}) == 0) {
-#         foreach my $child (@{$self->{_children}}) { 
-#             defined $child && $child->_detachParent();
-#         }
-#     }
-#     # we do not need to remove or undef the _children
-#     # of the _parent fields, this will cause some 
-#     # unwanted releasing of connections. 
+method DESTROY() {
+    # if we are using weak refs 
+    # we dont need to worry about
+    # destruction, it will just happen
+#todo not sure what to do here... need to implement references
+#    return if $USE_WEAK_REFS;
+    # we want to detach all our children from 
+    # ourselves, this will break most of the 
+    # connections and allow for things to get
+    # reaped properly
+     unless (!(@.children) && @.children.elems()==0) {
+         for @.children -> $child { 
+             defined $child && $child!detachParent();
+         }
+     }
+    # we do not need to remove or undef the _children
+    # of the _parent fields, this will cause some 
+    # unwanted releasing of connections. 
 }
 
 ## ----------------------------------------------------------------------------
