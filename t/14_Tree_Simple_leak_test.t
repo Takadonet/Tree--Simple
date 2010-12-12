@@ -1,6 +1,6 @@
 use v6;
 use Test;
-plan 33;
+plan 34;
 BEGIN
 {
     @*INC.push('lib');
@@ -91,7 +91,7 @@ use Tree::Simple;
     ok($tree2.isRoot(), '... now tree2 is a ROOT again');
     ok(!$tree2.isLeaf(), '... now tree2 is not a leaf again');    
     ok(!defined($tree2.getParent()), '... now tree2s parent is no longer defined');    
-    #     cmp_ok($tree2.getChildCount(), '==', 1, '... now tree2 has one child');    
+    is($tree2.getChildCount(), 1, '... now tree2 has one child');    
     #     memory_cycle_exists($tree3, '... calling DESTORY on tree1 did not break the connection betwee tree2 and tree3');
     ok(!$tree3.isRoot(), '... now tree3 is not a ROOT');
     ok($tree3.isLeaf(), '... now tree3 is still a leaf');    
