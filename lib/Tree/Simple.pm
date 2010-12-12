@@ -13,12 +13,12 @@ class Tree::Simple {
     has $.depth is rw =-1;
     
 
-# ## ----------------------------------------------------------------------------
-# ## Tree::Simple
-# ## ----------------------------------------------------------------------------
+## ----------------------------------------------------------------------------
+## Tree::Simple
+## ----------------------------------------------------------------------------
 
 
-# ### constructor
+### constructor
 
 multi method new(){
     my $x =self.bless(*, node => '',parent => 'root');
@@ -26,9 +26,7 @@ multi method new(){
     #####
     #should be in submethod BUILD
     $x.uid = $x.WHERE;
-    
     ###
-    
     return $x;
 }
     
@@ -39,9 +37,7 @@ multi method new($node) {
     #####
     #should be in submethod BUILD
     $x.uid = $x.WHERE;
-    
     ###
-    
     return $x;
 }
 
@@ -51,7 +47,6 @@ multi method new($node,'root'){
     #####
     #should be in submethod BUILD
     $x.uid = $x.WHERE;
-    
     ###
     return $x;
 }
@@ -70,29 +65,6 @@ multi method new($node,$parent){
     return $x;
 }
 
-
-method _init {
-    say 'nyi';
-    
-#     my ($self, $node, $parent, $children) = @_;
-
-#     # Now check our $parent value
-#     if (defined($parent)) {
-#         if (blessed($parent) && $parent->isa("Tree::Simple")) {
-#             # and set it as our parent
-#             $parent->addChild($self);
-#         }
-#         elsif ($parent eq $self->ROOT) {
-#             $self->_setParent( $self->ROOT );
-#         }
-#         else {
-#             die "Insufficient Arguments : parent argument must be a Tree::Simple object";
-#         }
-#     }
-#     else {
-#         $self->_setParent( $self->ROOT );
-#     }
-}
 
     #believe parameter check would be Tree::Simple
     #also should be private but cannot modify others setParent
@@ -120,14 +92,10 @@ method _detachParent {
 method setHeight(Tree::Simple $child) {
 
      my $child_height = $child.getHeight();
-#     return if ($self->{_height} >= $child_height + 1);
      if self.height < $child_height +1  {
          self.height = $child_height+1;
      }
 
-     
-#     $self->{_height} = $child_height + 1;
-    
      # and now bubble up to the parent (unless we are the root)
      if ! self.isRoot() {
          self.getParent().setHeight(self);
