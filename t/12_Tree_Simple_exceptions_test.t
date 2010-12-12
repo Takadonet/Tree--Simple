@@ -39,8 +39,7 @@ dies_ok( {
 
 # -----------------------------------------------
 
-#Todo will want to reference the class variable
-my $tree = Tree::Simple.new('root');
+my $tree = Tree::Simple.new($Tree::Simple::ROOT);
 
 # -----------------------------------------------
 # exceptions for setNodeValue

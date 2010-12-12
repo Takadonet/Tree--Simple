@@ -14,7 +14,7 @@ use Tree::Simple;
 # This specifically tests the details of the cloning functions
 ## ----------------------------------------------------------------------------
 
-# my $tree = Tree::Simple->new(Tree::Simple->ROOT);
+# my $tree = Tree::Simple->new($Tree::Simple::ROOT);
 # isa_ok($tree, 'Tree::Simple');
 
 # my $test = "test";
@@ -44,7 +44,7 @@ use Tree::Simple;
 # isa_ok($clone, 'Tree::Simple');
 
 # # make sure all the parentage is correct
-# is($clone->getParent(), Tree::Simple->ROOT, '... the clones parent is a root');
+# is($clone->getParent(), $Tree::Simple::ROOT, '... the clones parent is a root');
 
 # for my $child ($clone->getAllChildren()) {
 #     is($child->getParent(), $clone, '... the clones childrens parent should be our clone');

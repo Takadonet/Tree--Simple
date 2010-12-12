@@ -1,16 +1,6 @@
 class Tree::Simple {
     ## class constants
-    #should not be has should be 'our' 
-    has $.ROOT = "root";
-
-#     # set the value of the unique id
-#     ($self->{_uid}) = ("$self" =~ /\((.*?)\)$/);
-#     # set the value of the node
-#     $self->{_node} = $node;
-#     # and set the value of _children
-#     $self->{_children} = $children;    
-#     $self->{_height} = 1;
-#     $self->{_width} = 1;
+    our $ROOT = "root";
 
     #uid should be private however cannot init it a value within a new fcn
     #will be private when submethod BUILD works
@@ -112,7 +102,7 @@ method setParent($parent) {
 #         (($parent eq $self->ROOT) || (blessed($parent) && $parent->isa("Tree::Simple"))))
 #         || die "Insufficient Arguments : parent also must be a Tree::Simple object";
      $.parent = $parent;    
-     if ($parent eq $.ROOT) {
+     if ($parent eq $ROOT) {
          $.depth = -1;
      }
      else {
@@ -272,7 +262,7 @@ method removeChildAt($index) {
     # make sure that the removed child
     # is no longer connected to the parent
     # so we change its parent to ROOT
-    $removed_child.setParent($.ROOT);
+    $removed_child.setParent($ROOT);
     # and now we make sure that the depth 
     # of the removed child is aligned correctly
     $removed_child.fixDepth() unless $removed_child.isLeaf();    
@@ -307,7 +297,7 @@ multi method removeChild($child_to_remove) {
 }
 
 method getIndex {
-    return -1 if $.parent eq $.ROOT;
+    return -1 if $.parent eq $ROOT;
     my $index = 0;
     for self.parent.getAllChildren() ->  $sibling {
         #probably stringify the object to see if they are the same. Nice short circuit as well
@@ -408,7 +398,7 @@ method isLeaf {
 }
 
 method isRoot {
-    return (!defined($.parent) || $.parent eq $.ROOT);
+    return (!defined($.parent) || $.parent eq $ROOT);
 }
 
 method size() {

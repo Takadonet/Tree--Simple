@@ -19,8 +19,7 @@ my $SIMPLE_SUB = sub (*@a) { "test sub" };
 my $visitor = Tree::Simple::Visitor.new();
 ok($visitor ~~ Tree::Simple::Visitor);
 
-#todo use the class variable instead of 'root'
-my $tree = Tree::Simple.new('root').addChildren(
+my $tree = Tree::Simple.new($Tree::Simple::ROOT).addChildren(
  							Tree::Simple.new("1").addChildren(
                                              Tree::Simple.new("1.1"),
                                              Tree::Simple.new("1.2").addChild(Tree::Simple.new("1.2.1")),
@@ -159,8 +158,7 @@ ok($visitor1.can('visit'));
 # -----------------------------------------------
 
 # now make a tree
-#todo need to replace with class constant
-my $tree1 = Tree::Simple.new('ROOT').addChildren(
+my $tree1 = Tree::Simple.new($Tree::Simple::ROOT).addChildren(
 							Tree::Simple.new("1.0"),
 							Tree::Simple.new("2.0"),
 							Tree::Simple.new("3.0"),							

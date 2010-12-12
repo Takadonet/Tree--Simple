@@ -1,6 +1,6 @@
 use v6;
 use Test;
-plan 273;
+plan 275;
 BEGIN
 {
     @*INC.push('lib');
@@ -26,16 +26,14 @@ use Tree::Simple;
 # splitting them up would be a chore. 
 ## ----------------------------------------------------------------------------
 
-# # check that we have a constructor
-# can_ok("Tree::Simple", 'new');
-# # and that our ROOT constant is properly defined
-# can_ok("Tree::Simple", 'ROOT');
+# and that our ROOT constant is properly defined
+is($Tree::Simple::ROOT, 'root');
 
 # make a root for our tree
 # my $tree = Tree::Simple->new("root tree", Tree::Simple->ROOT);
 #see if we can do positional based as well as named based
 
-my $tree = Tree::Simple.new("root tree",'root');
+my $tree = Tree::Simple.new("root tree",$Tree::Simple::ROOT);
 
 ok($tree ~~ Tree::Simple, 'Tree::Simple object');
 
@@ -46,7 +44,7 @@ ok($tree ~~ Tree::Simple, 'Tree::Simple object');
 #can_ok($tree, '_setParent');
 
 
-my @methods= < isRoot isLeaf setNodeValue getNodeValue getDepth fixDepth getParent 
+my @methods= < new isRoot isLeaf setNodeValue getNodeValue getDepth fixDepth getParent 
 getChildCount addChild addChildren  removeChildAt removeChild
 getChild getAllChildren addSibling addSiblings  insertSiblings getSibling
 getAllSiblings traverse accept clone cloneShallow DESTROY getUID>;

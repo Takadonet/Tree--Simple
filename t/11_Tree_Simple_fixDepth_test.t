@@ -64,8 +64,8 @@ for $tree.getAllChildren() -> $sub_tree {
 
 # now create our other tree 
 # which we will add $tree too
-#todo make it work by using the constant class variable
-my $parent_tree = Tree::Simple.new('root');
+
+my $parent_tree = Tree::Simple.new($Tree::Simple::ROOT);
 $parent_tree.addChildren(
 	Tree::Simple.new("1"),
 	Tree::Simple.new("2")
