@@ -154,8 +154,18 @@ method addChildren(*@children) {
     return self;
 }
 
-    
-    #need to have an index and at least one child
+#adding alias for insertChildAt
+#Tree::Simple.^add_method('insertChild', Tree::Simple.^can('insertChildAt')); 
+#Tree::Simple.^add_method('insertChildren', Tree::Simple.^can('insertChildAt')); 
+#todo hopefully one day it will return the two functions below
+method insertChild($index,*@trees) {
+	self.insertChildAt($index,@trees);
+}
+
+method insertChildren($index,*@trees) {
+	self.insertChildAt($index,@trees);
+}
+#need to have an index and at least one child
 method insertChildAt(Int $index where { $index >= 0 },*@trees where { @trees.elems() > 0 }) {
      # check the bounds of our children 
      # against the index given
@@ -191,12 +201,6 @@ method insertChildAt(Int $index where { $index >= 0 },*@trees where { @trees.ele
 #       splice @{$self->{_children}}, $index, 0, @trees;
     }
 }
-
-# *insertChildren = \&_insertChildAt;
-
-# # insertChild is really the same as insertChildren, you are just
-# # inserting an array of one tree
-#*insertChild = \&insertChildren;
 
 method removeChildAt($index) {
 
@@ -298,7 +302,7 @@ method insertSibling($index,$sibling) {
     (!self.isRoot()) 
          || die "Insufficient Arguments : cannot insert sibling(s) to a ROOT tree";
     #todo need to create alias for insertChildren to insertChildAt
-    self.parent.insertChildAt($index,$sibling);
+    self.parent.insertChildren($index,$sibling);
 }
     
     
@@ -306,13 +310,8 @@ method insertSiblings($index,@args) {
     (!self.isRoot()) 
          || die "Insufficient Arguments : cannot insert sibling(s) to a ROOT tree";
     #todo need to create alias for insertChildren to insertChildAt
-    self.parent.insertChildAt($index,@args);    
+    self.parent.insertChildren($index,@args);    
 }
-
-# # insertSibling is really the same as
-# # insertSiblings, you are just inserting
-# # and array of one tree
-# *insertSibling = \&insertSiblings;
 
 # # I am not permitting the removal of siblings 
 # # as I think in general it is a bad idea
@@ -326,9 +325,6 @@ method getDepth     { $.depth;  }
 method getNodeValue { $.node;   }
 method getWidth     { $.width;  }
 method getHeight    { $.height; }
-
-# # for backwards compatability
-# *height = \&getHeight;
 
 method getChildCount {
     #$#{$_[0]{_children}} + 1

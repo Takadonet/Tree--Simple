@@ -246,8 +246,7 @@ ok($sub_tree_3.isRoot());
 ok($sub_tree_3.isLeaf());
 
 # now insert the child at index 2
-#TODO need to make alias for 'insertChild' that direct to insertChildAt
-$tree.insertChildAt(2, $sub_tree_3);
+$tree.insertChild(2, $sub_tree_3);
 
 # since we now have assigned a parent to
 # the new sub_tree, it will no longer be 
@@ -397,8 +396,7 @@ for @more_sub_children -> $sub_child {
 }
 
 # check to see if we can insert children
-#TODO need to make alias for 'insertChildren' that direct to insertChildAt    
-$sub_tree.insertChildAt(1, @more_sub_children);
+$sub_tree.insertChildren(1, @more_sub_children);
 
 # make sure that we now have 6 children now	
 is($sub_tree.getChildCount(), 6, '... we should have 6 children now');
@@ -721,8 +719,7 @@ is($tree_to_remove.getDepth(), -1, '... the depth should be -1');
 is($sub_tree_of_tree_to_remove.getDepth(), 0, '... the depth should be 0'); 
 
 # insert it into the sub_tree
-#TODO need to make alias for 'insertChildren' that direct to insertChildAt    
-$sub_tree.insertChildAt(1, $tree_to_remove);
+$sub_tree.insertChildren(1, $tree_to_remove);
 
 # test that it no longer thinks its a root
 ok(!$tree_to_remove.isRoot());
@@ -766,8 +763,7 @@ is($tree_to_remove2.getDepth(), -1, '... the depth should be -1');
 is($sub_tree_of_tree_to_remove2.getDepth(), 0, '... the depth should be 0'); 
 
 # insert it into the sub_tree
-#TODO need to make alias for 'insertChild' that direct to insertChildAt    
-$sub_tree.insertChildAt(1, $tree_to_remove2);
+$sub_tree.insertChild(1, $tree_to_remove2);
 
 # test that it no longer thinks its a root
 ok(!$tree_to_remove2.isRoot());
@@ -809,8 +805,7 @@ ok($tree_to_remove3.isRoot());
 is($tree_to_remove3.getDepth(), -1, '... the depth should be -1'); 
 
 # insert it into the sub_tree
-#TODO need to make alias for 'insertChild' that direct to insertChildAt    
-$sub_tree.insertChildAt(1, $tree_to_remove3);
+$sub_tree.insertChild(1, $tree_to_remove3);
 
 # test that it no longer thinks its a root
 ok(!$tree_to_remove3.isRoot());
@@ -861,8 +856,7 @@ is($removed_tree_2, $tree_to_remove_2, '... these tree should be equal');
 my $tree_to_remove_3 = Tree::Simple.new("1.1.-1");
 
 # add it into the sub_tree
-#TODO need to make alias for 'insertChild' that direct to insertChildAt    
-$sub_tree.insertChildAt(0, $tree_to_remove_3);
+$sub_tree.insertChild(0, $tree_to_remove_3);
 
 # make sure it is there
 is($sub_tree.getChild(0), $tree_to_remove_3, '... these tree should be equal');		
