@@ -473,8 +473,8 @@ method accept($visitor) {
 
 
     
-# ## ----------------------------------------------------------------------------
-# ## cloning 
+## ----------------------------------------------------------------------------
+## cloning 
 
 method clone() {
     # first clone the value in the node
@@ -501,45 +501,66 @@ method clone() {
     return $clone;
 }
     
-# # this allows cloning of single nodes while 
-# # retaining connections to a tree, this is sloppy
-method cloneShallow {
-    say 'nyi';    
-#     my ($self) = @_;
-#     my $cloned_tree = { %{$self} };
+# this allows cloning of single nodes while 
+# retaining connections to a tree, this is sloppy
+method cloneShallow() {
+     my $cloned_tree = self;
 #     bless($cloned_tree, ref($self));    
 #     # just clone the node (if you can)
-#     $cloned_tree->setNodeValue(_cloneNode($self->getNodeValue()));
-#     return $cloned_tree;    
+     $cloned_tree.setNodeValue(cloneNode(self.getNodeValue()));
+     return $cloned_tree;    
 }
 
-# multi method cloneNode(@nodes){
-        
+multi sub cloneNode(Str $node,%seen? = {} ) {
+    	# store the clone in the cache and 
+    	%seen{$node} = $node;        
 
-# }
+	return $node;
 
-# multi method cloneNode(%nodes){
-        
 
-# }
+}
+
+multi sub cloneNode($node where { $node ~~ Array}, %seen? ={}){
+        my $clone = [ map { cloneNode($_, %seen) }, @($node) ];
+
+    	# store the clone in the cache and 
+    	%seen{$node} = $clone;        
+
+	return $clone;
+}
+
+multi sub cloneNode($node where { $node ~~ Hash },%seen? ={}){
+        my $clone = {};
+        for keys $node -> $key  {
+	    $clone.{$key} = cloneNode($node.{$key}, %seen);
+        }
+       
+    	# store the clone in the cache and 
+    	%seen{$node} = $clone;        
+
+	return $clone;
+}
     
+multi sub cloneNode(Tree::Simple $node, %seen? ={}) {
+    	# store the clone in the cache and 
+        my $clone = $node.clone();
+    	%seen{$node} = $node;        
+
+	return $clone;
+}   
     
-    
-# # this is a helper function which 
-# # recursively clones the node
-multi sub cloneNode($node,%seen?) {
-#     my ($node, $seen) = @_;
-#     # create a cache if we dont already
-#     # have one to prevent circular refs
-#     # from being copied more than once
-#     $seen = {} unless defined $seen;
-#     # now here we go...
+# this is a helper function which 
+# recursively clones the node
+multi sub cloneNode($node,%seen? = {}) {
+    # create a cache if we dont already
+    # have one to prevent circular refs
+    # from being copied more than once
+    # now here we go...
     my $clone;
     # if it is not a reference, then lets just return it
-    return $node unless $node ~~ Tree::Simple;
+#    return $node unless $node ~~ Tree::Simple;
     # if it is in the cache, then return that
-#    return %seen{$node} if exists ${$seen}{$node};    
-#     return $seen->{$node} if exists ${$seen}{$node};
+    return %seen{$node} if %seen.exists($node);    
     # if it is an object, then ...
     if $node ~~ Tree::Simple {
         # see if we can clone it
@@ -552,45 +573,14 @@ multi sub cloneNode($node,%seen?) {
             $clone = $node;
         }        
     }
-        #todo need to  worry about non blessed objects
-#     if (blessed($node)) {
-#         # see if we can clone it
-#         if ($node->can('clone')) {
-#             $clone = $node->clone();
-#         }
-#         # otherwise respect that it does 
-#         # not want to be cloned
-#         else {
-#             $clone = $node;
-#         }
-#     }
-#     else {
-#         # if the current slot is a scalar reference, then
-#         # dereference it and copy it into the new object
-#         if (ref($node) eq "SCALAR" || ref($node) eq "REF") {
-#             my $var = "";
-#             $clone = \$var;
-#             ${$clone} = _cloneNode(${$node}, $seen);
-#         }
-#         # if the current slot is an array reference
-#         # then dereference it and copy it
-#         elsif (ref($node) eq "ARRAY") {
-#             $clone = [ map { _cloneNode($_, $seen) } @{$node} ];
-#         }
-#         # if the current reference is a hash reference
-#         # then dereference it and copy it
-#         elsif (ref($node) eq "HASH") {
-#             $clone = {};
-#             foreach my $key (keys %{$node}) {
-#                 $clone->{$key} = _cloneNode($node->{$key}, $seen);
-#             }
-#         }
-#         else {
-#             # all other ref types are not copied
-#             $clone = $node;
-#         }
-#     }
-        
+    elsif $node ~~ Capture {
+	#todo fix this:need to deference...
+	$clone = \$node;
+    }
+    else {
+	$clone = $node;
+    }
+       
     # store the clone in the cache and 
     %seen{$node} = $clone;        
     # then return the clone
