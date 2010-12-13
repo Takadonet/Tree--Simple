@@ -66,8 +66,8 @@ multi method new($node,$parent){
 }
 
 
-    #believe parameter check would be Tree::Simple
-    #also should be private but cannot modify others setParent
+#believe parameter check would be Tree::Simple
+#also should be private but cannot modify others setParent
 method setParent($parent) {
 #     my ($self, $parent) = @_;
 #     (defined($parent) && 
@@ -81,7 +81,7 @@ method setParent($parent) {
          $.depth = $parent.getDepth() + 1;
      }
 }
-#todo make private
+
 method !detachParent() {
 #     return if $USE_WEAK_REFS;
      self.parent = Mu;
@@ -119,22 +119,22 @@ multi method setWidth(Int $child_width) {
      self.getParent().setWidth($child_width) unless self.isRoot();            
 }
 
-# ## ----------------------------------------------------------------------------
-# ## mutators
+## ----------------------------------------------------------------------------
+## mutators
 
 method setNodeValue($node_value) {
     ($node_value) || die "Insufficient Arguments : must supply a value for node";
     self.node = $node_value;
 }
 
-method setUID($uid) {
+method setUID($uid where { defined($uid) }) {
 #     ($uid) || die "Insufficient Arguments : Custom Unique ID's must be a true value";
     
     self.uid = $uid;
 }
 
-# ## ----------------------------------------------
-# ## child methods
+## ----------------------------------------------
+## child methods
 
 #around type method like moose
 method addChild(Tree::Simple $child) {
