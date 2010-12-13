@@ -1,10 +1,14 @@
-# #!/usr/bin/perl
+use v6;
+use Test;
+plan 1;
+BEGIN
+{
+    @*INC.push('lib');
+    @*INC.push('blib');
+}
 
-# use strict;
-# use warnings;
 
-# use Test::More;
-
+skip_rest('Do not have Test::Pod module');
 # eval "use Test::Pod 1.14";
 # plan skip_all => "Test::Pod 1.14 required for testing POD" if $@;
 
