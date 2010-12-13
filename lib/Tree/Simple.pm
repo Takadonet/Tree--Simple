@@ -301,7 +301,6 @@ method addSiblings(@siblings) {
 method insertSibling($index,$sibling) {
     (!self.isRoot()) 
          || die "Insufficient Arguments : cannot insert sibling(s) to a ROOT tree";
-    #todo need to create alias for insertChildren to insertChildAt
     self.parent.insertChildren($index,$sibling);
 }
     
@@ -309,7 +308,6 @@ method insertSibling($index,$sibling) {
 method insertSiblings($index,@args) {
     (!self.isRoot()) 
          || die "Insufficient Arguments : cannot insert sibling(s) to a ROOT tree";
-    #todo need to create alias for insertChildren to insertChildAt
     self.parent.insertChildren($index,@args);    
 }
 
