@@ -66,8 +66,7 @@ multi method new($node,$parent){
 }
 
 
-#also should be private but cannot modify others setParent
-method setParent($parent where { $parent eq $Tree::Simple::ROOT || $parent ~~ Tree::Simple}) {
+method !setParent($parent where { $parent eq $Tree::Simple::ROOT || $parent ~~ Tree::Simple}) {
      $.parent = $parent;    
      if ($parent eq $ROOT) {
          $.depth = -1;
@@ -173,7 +172,7 @@ method insertChildAt(Int $index where { $index >= 0 },*@trees where { @trees.ele
      for @trees -> $tree is rw {
 #         (blessed($tree) && $tree->isa("Tree::Simple")) 
 #             || die "Insufficient Arguments : Child must be a Tree::Simple object";
-         $tree.setParent(self);
+         $tree!setParent(self);
          self.setHeight($tree);   
          self.setWidth($tree);                         
          $tree.fixDepth() unless $tree.isLeaf();
@@ -227,7 +226,7 @@ method removeChildAt($index) {
     # make sure that the removed child
     # is no longer connected to the parent
     # so we change its parent to ROOT
-    $removed_child.setParent($ROOT);
+    $removed_child!setParent($ROOT);
     # and now we make sure that the depth 
     # of the removed child is aligned correctly
     $removed_child.fixDepth() unless $removed_child.isLeaf();    
@@ -1053,7 +1052,7 @@ method DESTROY() {
 # new to initialize the object, where new's primary responsibility is creating 
 # the instance.
 
-# =item B<_setParent ($parent)>
+# =item B<!setParent ($parent)>
 
 # This method sets up the parental relationship. It is for internal use only.
 
