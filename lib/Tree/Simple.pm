@@ -116,14 +116,11 @@ multi method setWidth(Int $child_width) {
 ## ----------------------------------------------------------------------------
 ## mutators
 
-method setNodeValue($node_value) {
-    ($node_value) || die "Insufficient Arguments : must supply a value for node";
+method setNodeValue($node_value where {defined($node_value)}) {
     self.node = $node_value;
 }
 
 method setUID($uid where { defined($uid) }) {
-#     ($uid) || die "Insufficient Arguments : Custom Unique ID's must be a true value";
-    
     self.uid = $uid;
 }
 
@@ -133,7 +130,6 @@ method setUID($uid where { defined($uid) }) {
 #around type method like moose
 method addChild(Tree::Simple $child) {
     #provides the index
-#     splice @_, 1, 0, $_[0]->getChildCount;
     my $index = self.getChildCount();
     self.insertChildAt($index,$child);
     return self;
@@ -181,18 +177,15 @@ method insertChildAt(Int $index where { $index >= 0 },*@trees where { @trees.ele
     # if index is zero, use this optimization
     if $index == 0 {
         unshift self.children , @trees;
-#        unshift @{$self->{_children}} => @trees;
     }
     # if index is equal to the number of children
     # then use this optimization    
     elsif $index == $max {
         push self.children , @trees;
-#        push @{$self->{_children}} => @trees;
     }
     # otherwise do some heavy lifting here
     else {
         splice self.children, $index,0, @trees;
-#       splice @{$self->{_children}}, $index, 0, @trees;
     }
 }
 
@@ -201,7 +194,7 @@ method removeChildAt($index) {
     (self.getChildCount() != 0) 
          || die "Illegal Operation : There are no children to remove";        
     # check the bounds of our children 
-     # against the index given        
+    # against the index given        
      ($index < self.getChildCount()) 
          || die "Index Out of Bounds : got ($index) expected no more than (" ~ self.getChildCount() ~ ")";        
 
@@ -247,13 +240,9 @@ multi method removeChild(Int $child_index) {
 }
     
     
-multi method removeChild($child_to_remove) {
-
- #   (blessed($child_to_remove) && $child_to_remove->isa("Tree::Simple")) 
- #       || die "Insufficient Arguments : Only valid child type is a Tree::Simple object";
+multi method removeChild(Tree::Simple $child_to_remove) {
     my $index = 0;
     for self.getAllChildren() -> $child {
-        #todo need to double check it works as advertised
         ("$child" eq "$child_to_remove") && return self.removeChildAt($index);
         $index++;
     }
@@ -271,14 +260,14 @@ method getIndex {
     return $index;
 }
 
-# ## ----------------------------------------------
-# ## Sibling methods
+## ----------------------------------------------
+## Sibling methods
 
-# # these addSibling and addSiblings functions 
-# # just pass along their arguments to the addChild
-# # and addChildren method respectively, this 
-# # eliminates the need to overload these method
-# # in things like the Keyable Tree object
+# these addSibling and addSiblings functions 
+# just pass along their arguments to the addChild
+# and addChildren method respectively, this 
+# eliminates the need to overload these method
+# in things like the Keyable Tree object
 
 method addSibling(Tree::Simple $child) {
      (!self.isRoot()) 
@@ -305,10 +294,10 @@ method insertSiblings($index,@args) {
     self.parent.insertChildren($index,@args);    
 }
 
-# # I am not permitting the removal of siblings 
-# # as I think in general it is a bad idea
+# I am not permitting the removal of siblings 
+# as I think in general it is a bad idea
 
-# ## ----------------------------------------------------------------------------
+## ----------------------------------------------------------------------------
 ## accessors
 #todo remove them and add the alias to the attributes
 method getUID       { $.uid;    }
@@ -319,9 +308,7 @@ method getWidth     { $.width;  }
 method getHeight    { $.height; }
 
 method getChildCount {
-    #$#{$_[0]{_children}} + 1
     return @.children.elems();
-    
 }
 
 method getChild(Int $index) {
@@ -504,8 +491,6 @@ multi sub cloneNode(Str $node,%seen? = {} ) {
     	%seen{$node} = $node;        
 
 	return $node;
-
-
 }
 
 multi sub cloneNode($node where { $node ~~ Array}, %seen? ={}){
@@ -583,8 +568,8 @@ method DESTROY() {
     # if we are using weak refs 
     # we dont need to worry about
     # destruction, it will just happen
-#todo not sure what to do here... need to implement references
-#    return if $USE_WEAK_REFS;
+    #todo not sure what to do here... need to implement references
+    #return if $USE_WEAK_REFS;
     # we want to detach all our children from 
     # ourselves, this will break most of the 
     # connections and allow for things to get
