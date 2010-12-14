@@ -66,13 +66,8 @@ multi method new($node,$parent){
 }
 
 
-#believe parameter check would be Tree::Simple
 #also should be private but cannot modify others setParent
-method setParent($parent) {
-#     my ($self, $parent) = @_;
-#     (defined($parent) && 
-#         (($parent eq $self->ROOT) || (blessed($parent) && $parent->isa("Tree::Simple"))))
-#         || die "Insufficient Arguments : parent also must be a Tree::Simple object";
+method setParent($parent where { $parent eq $Tree::Simple::ROOT || $parent ~~ Tree::Simple}) {
      $.parent = $parent;    
      if ($parent eq $ROOT) {
          $.depth = -1;
