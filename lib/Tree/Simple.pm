@@ -166,8 +166,8 @@ method insertChildAt(Int $index where { $index >= 0 },*@trees where { @trees.ele
 
 
      for @trees -> $tree is rw {
-#         (blessed($tree) && $tree.isa("Tree::Simple")) 
-#             || die "Insufficient Arguments : Child must be a Tree::Simple object";
+         $tree ~~ Tree::Simple 
+             || die "Insufficient Arguments : Child must be a Tree::Simple object";
          $tree!setParent(self);
          self.setHeight($tree);   
          self.setWidth($tree);                         
