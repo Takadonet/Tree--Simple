@@ -10,7 +10,7 @@ subset DEPTH of Mu where { $_ eq 'RECURSIVE' || $_ eq 'CHILDREN_ONLY'};
 
 has $.depth is rw ;
     
-has Code $.filter_fcn is rw = Mu;
+has Code $.filter_fcn is rw;
 has Bool $.include_trunk is rw = Bool::False;
 has @.results is rw;
 
@@ -46,7 +46,7 @@ multi method includeTrunk(Bool $trunk) {
     self.include_trunk = $trunk;
 }
 #if given Mu, don't die but do nothing. Do not believe it should set to Bool::True
-# # node filter methods
+# node filter methods
 
 method getNodeFilter() {
  	return self.filter_fcn; 
@@ -75,11 +75,12 @@ method visit(Tree::Simple $tree) {
     # get all things set up
     my @results;
     my $func;
+    
     if self.filter_fcn {
-        $func = sub (*@a) { push @results , self.filter_fcn.(@a) };    
+        $func = sub ($a) { push @results , self.filter_fcn.($a) };    
     }
     else {
-        $func = sub (*@a) { push @results , @a[0].getNodeValue() }; 
+        $func = sub ($a) { push @results , $a.getNodeValue() }; 
     }
     # always apply the function 
     # to the tree's node
@@ -141,28 +142,10 @@ Tree::Simple::Visitor - Visitor object for Tree::Simple objects
                 return $t.getNodeValue().description();
                 });  
                   
-  # NOTE: this object has changed, but it still remains
-  # backwards compatible to the older version, see the
-  # DESCRIPTION section below for more details                  
 
 =head1 DESCRIPTION
 
 This object has been revised into what I think is more intelligent approach to Visitor objects. This is now a more suitable base class for building your own Visitors. It is also the base class for the visitors found in the B<Tree::Simple::VisitorFactory> distribution, which includes a number of useful pre-built Visitors.
-
-While I have changed a number of things about this module, I have kept it backwards compatible to the old way of using it. So the original example code still works:
-
-  my @accumulator;
-  my $visitor = Tree::Simple::Visitor.new(sub {
-                        my ($tree) = @_;  
-                        push @accumlator, $tree.getNodeValue();
-                        }, 
-                        $Tree::Simple::Visitor::RECURSIVE);
-  							 
-  $tree.accept($visitor);							 							 						
-  
-  print join ", ", @accumulator;  # prints "1.0, 2.0, 2.1.0, 3.0"
-  
-But is better expressed as this:
 
   my $visitor = Tree::Simple::Visitor.new();  							 
   $tree.accept($visitor);	  

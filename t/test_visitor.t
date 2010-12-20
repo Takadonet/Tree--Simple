@@ -21,11 +21,20 @@ my $tree = Tree::Simple.new($Tree::Simple::ROOT).addChildren(
 
 # by default this will collect all the 
 # node values in depth-first order into 
-# our results 
+# our results
+
+
+$visitor.setNodeFilter(sub ($t) { 
+                return $t.getNodeValue();
+                });  
+
+
 $tree.accept($visitor);	  
 
 # get our results and print them
 my @results= <1.0 2.0 2.1.0 3.0>;
 
+
 is($visitor.getResults().join(', '), @results.join(', '),'Find correct children');  # prints "1.0, 2.0, 2.1.0, 3.0" 
+
 
