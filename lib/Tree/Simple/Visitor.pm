@@ -20,7 +20,7 @@ multi method new(){
 }
 
 multi method new(Code $func) {
-	self.bless(*, depth => 'asdf',filter_fcn => $func, include_trunk=>Bool::True);
+	self.bless(*, depth => 0,filter_fcn => $func, include_trunk=>Bool::True);
 }
 
 #check to see if $depth is a integer or RECURSIVE or CHILDREN_ONLY
