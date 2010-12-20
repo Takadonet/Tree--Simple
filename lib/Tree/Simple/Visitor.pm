@@ -2,11 +2,11 @@ class Tree::Simple::Visitor{
 use Tree::Simple;
 
 # class constants
-our $RECURSIVE     = 'RECUSRIVE';
+our $RECURSIVE     = 'RECURSIVE';
 our $CHILDREN_ONLY = 'CHILDREN_ONLY';
 
-#RECURSIVE CHILDREN_ONLY or an integer
-subset DEPTH of Mu where { $_ eq 'RECURSIVE' || $_ eq 'CHILDREN_ONLY' or $_ ~~ Int};
+#RECURSIVE CHILDREN_ONLY
+subset DEPTH of Mu where { $_ eq 'RECURSIVE' || $_ eq 'CHILDREN_ONLY'};
 
 has $.depth is rw ;
     
@@ -20,11 +20,12 @@ multi method new(){
 }
 
 multi method new(Code $func) {
-	self.bless(*, depth => 0,filter_fcn => $func, include_trunk=>Bool::True);
+	self.bless(*, depth => 'RECURSIVE',filter_fcn => $func, include_trunk=>Bool::True);
 }
 
-#check to see if $depth is a integer or RECURSIVE or CHILDREN_ONLY
+#check to see if $depth  is RECURSIVE or CHILDREN_ONLY
 multi method new(Code $func,$depth) {
+        die 'Not legal value for depth.' if $depth ne 'RECURSIVE' and $depth ne 'CHILDREN_ONLY';
 	self.bless(*, depth => $depth,filter_fcn => $func, include_trunk=>Bool::True);
 }
 
@@ -84,12 +85,11 @@ method setNodeFilter(Code $filter_fcn) {
  	self.filter_fcn = $filter_fcn; 
 }
 
-# # resultscn methods 
+# resultscn methods 
 
-# sub setResults {
-#     my ($self, @results) = @_;
-#     $self->{results} = \@results;
-# }
+method setResults(@results) {
+    @.results= @results;
+}
 
 method getResults() {
     return @.results;
@@ -137,33 +137,33 @@ Tree::Simple::Visitor - Visitor object for Tree::Simple objects
   use Tree::Simple::Visitor;
   
   # create a visitor instance
-  my $visitor = Tree::Simple::Visitor->new();  							 
+  my $visitor = Tree::Simple::Visitor.new();  							 
   
   # create a tree to visit
-  my $tree = Tree::Simple->new(Tree::Simple->ROOT)
-                         ->addChildren(
-                             Tree::Simple->new("1.0"),
-                             Tree::Simple->new("2.0")
-                                         ->addChild(
-                                             Tree::Simple->new("2.1.0")
+  my $tree = Tree::Simple.new($Tree::Simple::ROOT)
+                         .addChildren(
+                             Tree::Simple.new("1.0"),
+                             Tree::Simple.new("2.0")
+                                         .addChild(
+                                             Tree::Simple.new("2.1.0")
                                              ),
-                             Tree::Simple->new("3.0")
+                             Tree::Simple.new("3.0")
                              );
 
   # by default this will collect all the 
   # node values in depth-first order into 
   # our results 
-  $tree->accept($visitor);	  
+  $tree.accept($visitor);	  
   
   # get our results and print them
-  print join ", ", $visitor->getResults();  # prints "1.0, 2.0, 2.1.0, 3.0" 
+  print join ", ", $visitor.getResults();  # prints "1.0, 2.0, 2.1.0, 3.0" 
   
   # for more complex node objects, you can specify 
   # a node filter which will be used to extract the
   # information desired from each node
-  $visitor->setNodeFilter(sub { 
+  $visitor.setNodeFilter(sub { 
                 my ($t) = @_;
-                return $t->getNodeValue()->description();
+                return $t.getNodeValue().description();
                 });  
                   
   # NOTE: this object has changed, but it still remains
@@ -177,21 +177,21 @@ This object has been revised into what I think is more intelligent approach to V
 While I have changed a number of things about this module, I have kept it backwards compatible to the old way of using it. So the original example code still works:
 
   my @accumulator;
-  my $visitor = Tree::Simple::Visitor->new(sub {
+  my $visitor = Tree::Simple::Visitor.new(sub {
                         my ($tree) = @_;  
-                        push @accumlator, $tree->getNodeValue();
+                        push @accumlator, $tree.getNodeValue();
                         }, 
-                        Tree::Simple::Visitor->RECURSIVE);
+                        $Tree::Simple::Visitor::RECURSIVE);
   							 
-  $tree->accept($visitor);							 							 						
+  $tree.accept($visitor);							 							 						
   
   print join ", ", @accumulator;  # prints "1.0, 2.0, 2.1.0, 3.0"
   
 But is better expressed as this:
 
-  my $visitor = Tree::Simple::Visitor->new();  							 
-  $tree->accept($visitor);	  
-  print join ", ", $visitor->getResults();  # prints "1.0, 2.0, 2.1.0, 3.0"  
+  my $visitor = Tree::Simple::Visitor.new();  							 
+  $tree.accept($visitor);	  
+  print join ", ", $visitor.getResults();  # prints "1.0, 2.0, 2.1.0, 3.0"  
 
 This object is still pretty much a wrapper around the Tree::Simple C<traverse> method, and can be thought of as a depth-first traversal Visitor object.  
 

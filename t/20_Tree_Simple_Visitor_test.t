@@ -1,6 +1,6 @@
 use v6;
 use Test;
-plan 25;
+plan 35;
 BEGIN
 {
     @*INC.push('lib');
@@ -66,23 +66,21 @@ dies_ok ({
 # compatability
 # -----------------------------------------------
 
-# # and that our RECURSIVE constant is properly defined
-# can_ok("Tree::Simple::Visitor", 'RECURSIVE');
-# # and that our CHILDREN_ONLY constant is properly defined
-# can_ok("Tree::Simple::Visitor", 'CHILDREN_ONLY');
+# and that our RECURSIVE constant is properly defined
+is($Tree::Simple::Visitor::RECURSIVE, 'RECURSIVE');
+# and that our CHILDREN_ONLY constant is properly defined
+is($Tree::Simple::Visitor::CHILDREN_ONLY, 'CHILDREN_ONLY');
 
 # no depth
 my $visitor1 = Tree::Simple::Visitor.new($SIMPLE_SUB);
 ok($visitor1 ~~ Tree::Simple::Visitor);
 
 # children only
-#todo replace with class constant instead of text
-my $visitor2 = Tree::Simple::Visitor.new($SIMPLE_SUB, 'CHILDREN_ONLY');
+my $visitor2 = Tree::Simple::Visitor.new($SIMPLE_SUB, $Tree::Simple::Visitor::CHILDREN_ONLY);
 ok($visitor2 ~~ Tree::Simple::Visitor);
 
 # recursive
-#todo replace with class constant instead of text
-my $visitor3 = Tree::Simple::Visitor.new($SIMPLE_SUB, 'RECURSIVE');
+my $visitor3 = Tree::Simple::Visitor.new($SIMPLE_SUB, $Tree::Simple::Visitor::RECURSIVE);
 ok($visitor3 ~~ Tree::Simple::Visitor);
 
 # -----------------------------------------------
@@ -95,54 +93,58 @@ dies_ok ({
 } ,'Insufficient Arguments : Depth arguement must be either RECURSIVE or CHILDREN_ONLY');
    
 # we pass a bad depth (numeric)
-#dies_ok ({
-#my $test = Tree::Simple::Visitor.new($SIMPLE_SUB, 100);
+dies_ok ({
+my $test = Tree::Simple::Visitor.new($SIMPLE_SUB, 100);
+},'Insufficient Arguments : Depth arguement must be either RECURSIVE or CHILDREN_ONLY');
 
-# },'Insufficient Arguments : Depth arguement must be either RECURSIVE or CHILDREN_ONLY');
+# we pass a non-ref func argument
+dies_ok ({
+ 	my $test = Tree::Simple::Visitor.new("Fail");
+} ,"Insufficient Arguments : filter function argument must be a subroutine reference");
 
-# # we pass a non-ref func argument
-# throws_ok {
-# 	my $test = Tree::Simple::Visitor->new("Fail");
-# } qr/Insufficient Arguments \: filter function argument must be a subroutine reference/,
-#    '... we are expecting this error';
 
 # # we pass a non-code-ref func arguement   
-# throws_ok {
-# 	my $test = Tree::Simple::Visitor->new([]);
-# } qr/Insufficient Arguments \: filter function argument must be a subroutine reference/,
-#    '... we are expecting this error';   
+dies_ok ({
+ 	my $test = Tree::Simple::Visitor.new([]);
+},"Insufficient Arguments : filter function argument must be a subroutine reference");
+
+
 
 # -----------------------------------------------
 # test other exceptions
 # -----------------------------------------------
 
-# # and make sure we can call the visit method
+# and make sure we can call the visit method
 ok($visitor1.can('visit'));
 
 # test no arg
-# throws_ok {
-# 	$visitor1->visit();
-# } qr/Insufficient Arguments \: You must supply a valid Tree\:\:Simple object/,
+dies_ok ( {
+ 	$visitor1.visit();
+} , "Insufficient Arguments : You must supply a valid Tree::Simple object");
+
 #    '... we are expecting this error'; 
    
-# # test non-ref arg
-# throws_ok {
-# 	$visitor1->visit("Fail");
-# } qr/Insufficient Arguments \: You must supply a valid Tree\:\:Simple object/,
+# test non-ref arg
+dies_ok ( {
+ 	$visitor1.visit("Fail");
+}, "Insufficient Arguments : You must supply a valid Tree::Simple object");
+
 #    '... we are expecting this error'; 	 
    
-# # test non-object ref arg
-# throws_ok {
-# 	$visitor1->visit([]);
-# } qr/Insufficient Arguments \: You must supply a valid Tree\:\:Simple object/,
+# test non-object ref arg
+dies_ok ( {
+ 	$visitor1.visit([]);
+ } ,"Insufficient Arguments : You must supply a valid Tree::Simple object");
 #    '... we are expecting this error'; 	   
+
+class BAD {};
+
+my $BAD_OBJECT = BAD.new();   
    
-# my $BAD_OBJECT = bless({}, "Test");   
-   
-# # test non-Tree::Simple object arg
-# throws_ok {
-# 	$visitor1->visit($BAD_OBJECT);
-# } qr/Insufficient Arguments \: You must supply a valid Tree\:\:Simple object/,
+# test non-Tree::Simple object arg
+dies_ok ( {
+ 	$visitor1.visit($BAD_OBJECT);
+} ,"Insufficient Arguments \: You must supply a valid Tree\:\:Simple object");
 #    '... we are expecting this error'; 	   
    
 
@@ -173,11 +175,9 @@ lives_ok( {
 }, '.. this passes fine');
 
 # and pass the visitor2 to accept
-#todo figure out why it fails when it does not even die!
-#lives_ok ({
+lives_ok( {
  	$tree1.accept($visitor2);
-#}, '.. this passes fine');
-
+}, '.. this passes fine');
 
 # and pass the visitor3 to accept
 lives_ok( {
