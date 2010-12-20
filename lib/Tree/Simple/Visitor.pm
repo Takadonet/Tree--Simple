@@ -29,32 +29,7 @@ multi method new(Code $func,$depth) {
 	self.bless(*, depth => $depth,filter_fcn => $func, include_trunk=>Bool::True);
 }
 
-    
-# sub new {
-# 	my ($_class, $func, $depth) = @_;
-# 	if (defined($depth)){
-# 		($depth =~ /\d+/ && ($depth == RECURSIVE || $depth == CHILDREN_ONLY)) 
-# 			|| die "Insufficient Arguments : Depth arguement must be either RECURSIVE or CHILDREN_ONLY";
-# 	}    
-# 	my $class = ref($_class) || $_class;
-#     # if we have not supplied a $func 
-#     # it is automatically RECURSIVE
-#     $depth = RECURSIVE unless defined $func;
-# 	my $visitor = {
-# 		depth => $depth || 0
-# 		};
-# 	bless($visitor, $class);
-# 	$visitor->_init();
-#     if (defined $func) {
-#         $visitor->setNodeFilter($func);
-#         $visitor->includeTrunk(1);    
-#     }
-# 	return $visitor;
-# }
-
 ### methods
-
-
 
 #if given Mu, don't die but do nothing. Do not believe it should set to Bool::True
 multi method includeTrunk(Mu){ };
