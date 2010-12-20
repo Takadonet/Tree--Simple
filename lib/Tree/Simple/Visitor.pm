@@ -25,7 +25,7 @@ multi method new(Code $func) {
 
 #check to see if $depth  is RECURSIVE or CHILDREN_ONLY
 multi method new(Code $func,$depth) {
-        die 'Not legal value for depth.' if $depth ne 'RECURSIVE' and $depth ne 'CHILDREN_ONLY';
+        die 'Not legal value for depth.' if $depth ne $Tree::Simple::Visitor::RECURSIVE and $depth ne $Tree::Simple::Visitor::CHILDREN_ONLY;
 	self.bless(*, depth => $depth,filter_fcn => $func, include_trunk=>Bool::True);
 }
 
