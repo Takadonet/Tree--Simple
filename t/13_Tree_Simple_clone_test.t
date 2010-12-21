@@ -62,7 +62,7 @@ ok($tree.getChild(1).getNodeValue().WHAT ~~ Capture, '... these should be scalar
 isnt($clone.getChild(1).getNodeValue().WHERE, $tree.getChild(1).getNodeValue().WHERE, 
  	'... these should be different scalar refs');
 #with the same value
-is($clone.getChild(1).getNodeValue(), $tree.getChild(1).getNodeValue(), 
+is($clone.getChild(1).getNodeValue().[0], $tree.getChild(1).getNodeValue().[0], 
  	'... these should be the same value');
 	
 # they should both be array refs
@@ -130,7 +130,7 @@ is($tree.getChild(8).getNodeValue().WHAT, Capture, '... these should be refs of 
 isnt($clone.getChild(8).getNodeValue().WHERE, $tree.getChild(8).getNodeValue().WHERE, 
 	'... these should be different scalar refs');
 # with the same ref value
-is($($($clone.getChild(8).getNodeValue())), $($($tree.getChild(8).getNodeValue())), 
+is($clone.getChild(8).getNodeValue().[0].[0], $tree.getChild(8).getNodeValue().[0].[0], 
  	'... these should be the same value');    
 
 # test cloneShallow
