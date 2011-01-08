@@ -1,0 +1,9 @@
+{
+    "name" : "Tree::Simple",
+    "version" : "*",
+    "description" : "A simple tree object",
+    "depends" : [],
+    "repo-type" : "git",
+    "repo-url" : "git://github.com/Takadonet/Tree--Simple.git"
+}
+
