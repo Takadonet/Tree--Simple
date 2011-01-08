@@ -52,14 +52,13 @@ is_deeply($visitor.getResults(),[ <_1 _1.1 _1.2 _1.2.1 _1.3 _2 _3>],
          '... got what we expected');
         
 # test some exceptions
-
 dies_ok ({
      $visitor.setNodeFilter();        
-}, 'Insufficient Arguments ... this should die');
+});
 
 dies_ok ({
      $visitor.setNodeFilter([]);        
-}, 'Insufficient Arguments ... this should die');
+});
 
 # -----------------------------------------------
 # test the old style interface for backwards 
@@ -90,23 +89,23 @@ ok($visitor3 ~~ Tree::Simple::Visitor);
 # we pass a bad depth (string)
 dies_ok ({
     my $test = Tree::Simple::Visitor.new($SIMPLE_SUB, "Fail")
-} ,'Insufficient Arguments : Depth arguement must be either RECURSIVE or CHILDREN_ONLY');
+});
    
 # we pass a bad depth (numeric)
 dies_ok ({
 my $test = Tree::Simple::Visitor.new($SIMPLE_SUB, 100);
-},'Insufficient Arguments : Depth arguement must be either RECURSIVE or CHILDREN_ONLY');
+});
 
 # we pass a non-ref func argument
 dies_ok ({
  	my $test = Tree::Simple::Visitor.new("Fail");
-} ,"Insufficient Arguments : filter function argument must be a subroutine reference");
+});
 
 
 # # we pass a non-code-ref func arguement   
 dies_ok ({
  	my $test = Tree::Simple::Visitor.new([]);
-},"Insufficient Arguments : filter function argument must be a subroutine reference");
+});
 
 
 
@@ -120,22 +119,21 @@ ok($visitor1.can('visit'));
 # test no arg
 dies_ok ( {
  	$visitor1.visit();
-} , "Insufficient Arguments : You must supply a valid Tree::Simple object");
+});
 
 #    '... we are expecting this error'; 
    
 # test non-ref arg
 dies_ok ( {
  	$visitor1.visit("Fail");
-}, "Insufficient Arguments : You must supply a valid Tree::Simple object");
+});
 
 #    '... we are expecting this error'; 	 
    
 # test non-object ref arg
 dies_ok ( {
  	$visitor1.visit([]);
- } ,"Insufficient Arguments : You must supply a valid Tree::Simple object");
-#    '... we are expecting this error'; 	   
+ });
 
 class BAD {};
 
@@ -144,9 +142,7 @@ my $BAD_OBJECT = BAD.new();
 # test non-Tree::Simple object arg
 dies_ok ( {
  	$visitor1.visit($BAD_OBJECT);
-} ,"Insufficient Arguments \: You must supply a valid Tree\:\:Simple object");
-#    '... we are expecting this error'; 	   
-   
+});
 
 # -----------------------------------------------
 # Test accept & visit
