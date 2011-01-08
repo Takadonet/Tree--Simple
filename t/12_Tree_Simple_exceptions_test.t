@@ -284,7 +284,7 @@ dies_ok( {
 
 # # not giving an index to the getChild method
 dies_ok( {
-# 	$tree.getChild();
+ 	$tree.getChild();
 } ) ; # qr/^Insufficient Arguments \: Cannot get child without index/, '... this should die';
 
 # -----------------------------------------------
