@@ -3,7 +3,7 @@
     "version" : "*",
     "description" : "A simple tree object",
     "depends" : [],
-    "repo-type" : "git",
+    "source-type" : "git",
     "source-url" : "git://github.com/Takadonet/Tree--Simple.git"
 }
 
