@@ -101,7 +101,7 @@ method visit(Tree::Simple $tree) {
 
 }
 
-=begin
+=begin pod
     
 =head1 NAME
 
@@ -238,4 +238,4 @@ it under the same terms as Perl itself.
 
 =cut
 
-=end
+=end pod
