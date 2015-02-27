@@ -479,10 +479,9 @@ method clone() {
 # this allows cloning of single nodes while 
 # retaining connections to a tree, this is sloppy
 method cloneShallow() {
-     my $cloned_tree = self;
-#     bless($cloned_tree, ref($self));    
+     my $cloned_tree = self.new(cloneNode(self.getNodeValue()));
+     $cloned_tree.addChildren(self.getAllChildren);
 #     # just clone the node (if you can)
-     $cloned_tree.setNodeValue(cloneNode(self.getNodeValue()));
      return $cloned_tree;    
 }
 
