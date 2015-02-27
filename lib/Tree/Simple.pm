@@ -533,7 +533,7 @@ multi sub cloneNode($node,%seen? = {}) {
     # if it is not a reference, then lets just return it
 #    return $node unless $node ~~ Tree::Simple;
     # if it is in the cache, then return that
-    return %seen{$node} if %seen.exists($node);    
+    return %seen{$node} if %seen{$node}:exists;
     # if it is an object, then ...
     if $node ~~ Tree::Simple {
         # see if we can clone it
