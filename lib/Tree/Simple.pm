@@ -137,7 +137,7 @@ method addChild(Tree::Simple $child) {
 
 method addChildren(*@children) {
     my $index;
-    for @children -> $child {
+    for |@children -> $child {
         $index = self.getChildCount();
         self.insertChildAt($index,$child);        
     }
@@ -149,11 +149,11 @@ method addChildren(*@children) {
 #Tree::Simple.^add_method('insertChildren', Tree::Simple.^can('insertChildAt')); 
 #todo hopefully one day it will return the two functions below
 method insertChild($index,*@trees) {
-	self.insertChildAt($index,@trees);
+	self.insertChildAt($index,|@trees);
 }
 
 method insertChildren($index,*@trees) {
-	self.insertChildAt($index,@trees);
+	self.insertChildAt($index,|@trees);
 }
 #need to have an index and at least one child
 method insertChildAt(Int $index where { $index >= 0 },*@trees where { @trees.elems() > 0 }) {
@@ -165,7 +165,7 @@ method insertChildAt(Int $index where { $index >= 0 },*@trees where { @trees.ele
      }
 
 
-     for @trees -> $tree is rw {
+     for |@trees -> $tree is rw {
          $tree ~~ Tree::Simple 
              || die "Insufficient Arguments : Child must be a Tree::Simple object";
          $tree!setParent(self);
