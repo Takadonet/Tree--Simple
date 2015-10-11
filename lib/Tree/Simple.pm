@@ -176,16 +176,16 @@ method insertChildAt(Int $index where { $index >= 0 },*@trees where { @trees.ele
 
     # if index is zero, use this optimization
     if $index == 0 {
-        unshift self.children , @trees;
+        unshift self.children , |@trees;
     }
     # if index is equal to the number of children
     # then use this optimization    
     elsif $index == $max {
-        push self.children , @trees;
+        push self.children , |@trees;
     }
     # otherwise do some heavy lifting here
     else {
-        splice self.children, $index,0, @trees;
+        splice self.children, $index,0, |@trees;
     }
 }
 
@@ -316,7 +316,7 @@ method getChild(Int $index) {
 }
 
 method getAllChildren {
-    self.children;
+    return self.children;
 }
 
 method getSibling($index) {
@@ -546,8 +546,7 @@ multi sub cloneNode($node,%seen? = {}) {
         }        
     }
     elsif $node ~~ Capture {
-	#todo fix this:need to deference...
-	$clone = \$node;
+	$clone = $node;
     }
     else {
 	$clone = $node;
