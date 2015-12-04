@@ -1,11 +1,7 @@
 use v6;
 use Test;
 plan 1;
-BEGIN
-{
-    @*INC.push('lib');
-    @*INC.push('blib');
-}
+use lib <lib blib>;
 
 
 skip_rest('Do not have Test::Pod module');

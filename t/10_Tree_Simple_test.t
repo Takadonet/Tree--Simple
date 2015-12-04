@@ -1,12 +1,7 @@
 use v6;
 use Test;
 plan 275;
-BEGIN
-{
-    @*INC.push('lib');
-    @*INC.push('blib');
-}
-
+use lib <lib blib>;
 
 
 eval_lives_ok 'use Tree::Simple', 'Can use Tree::Simple';
